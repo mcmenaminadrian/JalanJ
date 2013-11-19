@@ -14,16 +14,18 @@ import org.xml.sax.helpers.DefaultHandler
 class MappingHandler extends DefaultHandler {
 	
 	def threadCount
-	long threadBitmap
+	long threadBitMap
 	def threadList = []
 	def currentThread
+	def groupingName
 
-	MappingHandler()
+	MappingHandler(def baseName)
 	{
 		super()
 		threadCount = 0
-		threadBitmap = 0L
+		threadBitMap = 0L
 		currentThread = new PosixThreadTID(0, 0, 0)
+		groupingName = baseName
 	}
 	
 	void startElement(String ns, String localName, String qName,
@@ -32,7 +34,7 @@ class MappingHandler extends DefaultHandler {
 			
 			def threadNumberStr = attrs.getValue('tid')
 			def threadNumberInt = Integer.parseInt(threadNumberStr, 16)
-			if (threadNumberInt != currentThread) {
+			if (threadNumberInt != currentThread.number) {
 				def nextThread
 				def testThread = 1 << (threadNumberInt - 1)
 				if (!(threadBitMap & testThread)) {
@@ -40,19 +42,55 @@ class MappingHandler extends DefaultHandler {
 					nextThread =
 						new PosixThreadTID(threadNumberInt, currentThread)
 					threadList << nextThread
-					println "Thread $threadNumberInt begins after "
-					"$currentThread.number instruction"
-					" $currentThread.instructionCount"
+					nextThread.openXML(groupingName)
+					if (currentThread.number > 0) {
+						currentThread.outputSpawn(threadNumberInt)
+					}
+					
+					print("Thread $threadNumberInt begins after thread ")
+					print("$currentThread.number reference")
+					println(" $currentThread.referenceCount")
 				} else {
-					nextThread = threadList.find {it.number = threadNumberInt}
+					nextThread = threadList.find {it.number == threadNumberInt}
 				}
 				currentThread = nextThread
 			}
 		} else {
-			if (qName == 'instruction'||qName == 'store' ||
-				qName == 'load' || qName == 'modify') {
-				currentThread++
+			switch (qName) {
+				case 'instruction':
+				currentThread.
+					outputInstruction(attrs.getValue('address'),
+						attrs.getValue('size'))
+				break
+				
+				case 'modify':
+				currentThread.
+					outputModify(attrs.getValue('address'),
+						attrs.getValue('size'))
+				break
+				
+				case 'load':
+				currentThread.
+					outputLoad(attrs.getValue('address'),
+						attrs.getValue('size'))
+				break
+				
+				case 'store':
+				currentThread.
+					outputStore(attrs.getValue('address'),
+						attrs.getValue('size'))		
+				
+				default:
+				break
 			}
+			currentThread.increment()
 		}
+	}
+		
+	void endDocument()
+	{
+		threadList.each() {
+			it.closeXML()
+		} 
 	}
 }

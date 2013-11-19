@@ -15,7 +15,7 @@ import java.util.concurrent.*
  */
 class JalanParse {
 	
-	JalanParse(def threads, def execute, def fileName)
+	JalanParse(def threads, def execute, def baseName, def fileName)
 	{
 		if (threads) {
 			println "Counting threads in $fileName"
@@ -27,7 +27,7 @@ class JalanParse {
 		}
 		if (execute) {
 			println "Timing execution"
-			def threadMapper = new MappingHandler()
+			def threadMapper = new MappingHandler(baseName)
 			def mapIn = SAXParserFactory.newInstance().newSAXParser().XMLReader
 			mapIn.setContentHandler(threadMapper)
 			mapIn.parse(new InputSource(new FileInputStream(fileName)))
@@ -39,6 +39,8 @@ def cliJalan = new CliBuilder
 	(usage: 'Jalan [options] XMLFile')
 cliJalan.t(longOpt: 'threads', 'Count threads')
 cliJalan.x(longOpt: 'execution', 'Time execution model')
+cliJalan.b(longOpt: 'basename', args:1, argName:'filename',
+	optionalArg:true, 'Name for thread records')
 
 def jArgs = cliJalan.parse(args)
 
@@ -50,10 +52,17 @@ if (jArgs.u || args.size()==0) {
 		threads = true
 	}
 	def execute = false
+	def basename = "${new Date().time.toString()}"
+	
 	if (jArgs.x) {
 		execute = true
 	}
 	
-	new JalanParse(threads, execute, args[args.size() - 1])
+	if (jArgs.b) {
+		execute = true
+		basename = jArgs.b
+	}
+	
+	new JalanParse(threads, execute, basename, args[args.size() - 1])
 	
 }
