@@ -97,5 +97,8 @@ class PosixThreadTID {
 		writer.close()
 	}
 	
-	
+	void writeRecord(def writeIn)
+	{
+		writeIn.write("<file path=\"${baseName}_${number}.xml\" />\n")
+	}
 }
