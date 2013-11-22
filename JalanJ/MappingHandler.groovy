@@ -91,6 +91,28 @@ class MappingHandler extends DefaultHandler {
 	{
 		threadList.each() {
 			it.closeXML()
-		} 
+		}
+
+		//output a control file record
+		def writer = new FileWriter("${groupingName}_control.xml")
+		writer.write(
+			"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n")
+		writer.write("<!DOCTYPE threadrecordml [\n")
+		writer.write(
+			"<!ELEMENT threadrecordml (file)*>\n")
+		writer.write("<!ATTLIST threadrecordml version CDATA #FIXED \"0.1\">\n")
+		writer.write("<!ATTLIST threadml xmlns CDATA #FIXED")
+		writer.write(" \"http://cartesianproduct.wordpress.com\">\n")
+		writer.write("<!ELEMENT file EMPTY>\n")
+		writer.write("<!ATTLIST file path CDATA #REQUIRED>\n")
+		writer.write("]>\n")
+		writer.write("<threadrecordml")
+		writer.write(" xmlns=\"http://cartesianproduct.wordpress.com\">\n")
+		threadList.each () {
+			it.writeRecord(writer)
+		}
+		writer.write("</threadrecordml>\n")
+		writer.close()
 	}
+	
 }
