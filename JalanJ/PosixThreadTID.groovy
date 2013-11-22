@@ -43,7 +43,7 @@ class PosixThreadTID {
 		writer.write(
 			"<!ELEMENT threadml (instruction|modify|store|load|spawn)*>\n")
 		writer.write("<!ATTLIST threadml version CDATA #FIXED \"0.1\">\n")
-		writer.write("<!ATTLIST threadml thread CDATA #REQUIRED")
+		writer.write("<!ATTLIST threadml thread CDATA #REQUIRED>\n")
 		writer.write("<!ATTLIST threadml xmlns CDATA #FIXED")
 		writer.write(" \"http://cartesianproduct.wordpress.com\">\n")
 		writer.write("<!ELEMENT instruction EMPTY>\n")
