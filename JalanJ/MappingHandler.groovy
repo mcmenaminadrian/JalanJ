@@ -101,9 +101,10 @@ class MappingHandler extends DefaultHandler {
 		writer.write(
 			"<!ELEMENT threadrecordml (file)*>\n")
 		writer.write("<!ATTLIST threadrecordml version CDATA #FIXED \"0.1\">\n")
-		writer.write("<!ATTLIST threadml xmlns CDATA #FIXED")
+		writer.write("<!ATTLIST threadrecordml xmlns CDATA #FIXED")
 		writer.write(" \"http://cartesianproduct.wordpress.com\">\n")
 		writer.write("<!ELEMENT file EMPTY>\n")
+		writer.write("<!ATTLIST file thread CDATA #REQUIRED>\n")
 		writer.write("<!ATTLIST file path CDATA #REQUIRED>\n")
 		writer.write("]>\n")
 		writer.write("<threadrecordml")

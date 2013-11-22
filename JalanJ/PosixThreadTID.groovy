@@ -99,6 +99,7 @@ class PosixThreadTID {
 	
 	void writeRecord(def writeIn)
 	{
-		writeIn.write("<file path=\"${baseName}_${number}.xml\" />\n")
+		writeIn.write("<file thread=\"${number}\" ");
+		writeIn.write("path=\"${baseName}_${number}.xml\" />\n")
 	}
 }

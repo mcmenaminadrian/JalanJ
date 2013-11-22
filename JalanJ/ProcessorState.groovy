@@ -22,5 +22,10 @@ class ProcessorState {
 		activeThread = -1
 		instructionCount = 0L
 	}
+	
+	void setThread(def thread)
+	{
+		activeThread = thread
+	}
 
 }
