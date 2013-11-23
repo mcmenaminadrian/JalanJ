@@ -59,6 +59,7 @@ class ExecutionTimer {
 	void beginExecution()
 	{
 		activeThreads = 1
+		//this is the first thread, so we just allocate a processor
 		
 		handleThread(firstThread)
 	

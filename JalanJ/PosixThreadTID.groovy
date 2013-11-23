@@ -6,25 +6,13 @@ class PosixThreadTID {
 	
 	def number
 	long referenceCount
-	def threadStarter
-	long threadStarterReference
 	def writer
 	def threadxml
 	
-	PosixThreadTID(def numb, def previousThread, long previousThreadIC)
+	PosixThreadTID(def numb)
 	{
 		number = numb
 		referenceCount = 0L
-		threadStarter = previousThread
-		threadStarterReference = previousThreadIC
-	}
-	
-	PosixThreadTID(def numb, def oldThread)
-	{
-		number = numb
-		referenceCount = 0L
-		threadStarter = oldThread.number
-		threadStarterReference = oldThread.referenceCount
 	}
 	
 	long increment()

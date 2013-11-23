@@ -24,7 +24,7 @@ class MappingHandler extends DefaultHandler {
 		super()
 		threadCount = 0
 		threadBitMap = 0L
-		currentThread = new PosixThreadTID(0, 0, 0)
+		currentThread = new PosixThreadTID(0)
 		groupingName = baseName
 	}
 	
@@ -40,7 +40,7 @@ class MappingHandler extends DefaultHandler {
 				if (!(threadBitMap & testThread)) {
 					threadBitMap = threadBitMap | testThread
 					nextThread =
-						new PosixThreadTID(threadNumberInt, currentThread)
+						new PosixThreadTID(threadNumberInt)
 					threadList << nextThread
 					nextThread.openXML(groupingName)
 					if (currentThread.number > 0) {
