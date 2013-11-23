@@ -12,6 +12,7 @@ import org.xml.sax.*
  */
 
 
+
 class ExecutionTimer {
 	
 	def controlFile
@@ -21,6 +22,7 @@ class ExecutionTimer {
 	def threadMap = [:]
 	def PROCESSORS = 16
 	def firstThread
+	def activeThreads
 	
 	ExecutionTimer(def fileStr)
 	{
@@ -41,16 +43,25 @@ class ExecutionTimer {
 	{
 		firstThread = number
 	}
+
 	
-	void beginExecution()
-	{
+	def handleThread = Thread.start {
 		def threadHandler = new ThreadHandler()
-		def threadIn = 
+		def threadIn =
 			SAXParserFactory.newInstance().newSAXParser().XMLReader
 		threadIn.setContentHandler(threadHandler)
 		parsers << threadIn
 		threadIn.parse(
-			new InputSource(new FileInputStream(threadMap[firstThread])))	
+			new InputSource(new FileInputStream(threadMap[it]))
+			)
+	}
+		
+	void beginExecution()
+	{
+		activeThreads = 1
+		
+		handleThread(firstThread)
+	
 	}
 	
 	def timeExecution()
