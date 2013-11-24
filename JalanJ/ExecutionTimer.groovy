@@ -55,9 +55,6 @@ class ExecutionTimer {
 			if (it.waitOne) {
 				it.waitOne.release(1)
 			}
-			if (it.waitCount) {
-				it.waitCount.release(1)
-			}
 		}
 	}
 

@@ -27,6 +27,7 @@ class ProcessorState {
 		instructionCount = 0L
 	}
 	
+	
 	synchronized void setThread(def thread)
 	{
 		activeThread = thread
@@ -43,7 +44,7 @@ class ProcessorState {
 		}
 	}
 	
-	synchronized def clockTick()
+	synchronized void clockTick()
 	{
 		localMemory.each { key, value ->
 			if (value > 0) {
@@ -52,17 +53,26 @@ class ProcessorState {
 		}
 	}
 	
-	synchronized def dumpPage()
+	synchronized def allocateToFree(long address)
+	{
+		if (localMemory.size() * pageSize < MAXSIZE) {
+			localMemory[address >> PAGESHIFT] = 1
+			return true
+		}
+		return false
+	}
+	
+	synchronized void dumpPage()
 	{
 		//find minimum value and remove first that matches
 		def minReference = localMemory.min{it.value}
 		localMemory.remove(minReference.key)
 	}
 	
-	synchronized def addPage(long address)
+	synchronized void addPage(long address)
 	{
 		def pageSize = 1 << PAGESHIFT
-		if (localMemory.size() * pageSize == MAXSIZE) {
+		if (localMemory.size() * pageSize >= MAXSIZE) {
 			dumpPage()
 		}
 		if (!gotPage(address)) {
@@ -72,6 +82,15 @@ class ProcessorState {
 	
 	synchronized def matchThread(def threadNo)
 	{
-		return (threadNo = activeThread)
+		return (threadNo == activeThread)
+	}
+	
+	synchronized def assignThread(def threadNo)
+	{
+		if (activeThread == -1) {
+			activeThread = threadNo
+			return true
+		}
+		return false
 	}
 }
