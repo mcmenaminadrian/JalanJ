@@ -8,6 +8,7 @@ class PosixThreadTID {
 	long referenceCount
 	def writer
 	def threadxml
+	def baseName
 	
 	PosixThreadTID(def numb)
 	{
@@ -20,8 +21,9 @@ class PosixThreadTID {
 		return ++referenceCount
 	}
 	
-	void openXML(def baseName)
+	void openXML(def baseN)
 	{
+		baseName = baseN
 		//start writing XML file
 		writer = new FileWriter("${baseName}_${number}.xml")
 		threadxml = new MarkupBuilder(writer)
