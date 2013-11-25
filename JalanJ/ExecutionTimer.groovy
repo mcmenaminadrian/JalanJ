@@ -61,7 +61,7 @@ class ExecutionTimer {
 	}
 
 	
-	def handleThread(def threadStr, def procs){
+	synchronized def handleThread(def threadStr, def procs){
 		Thread.start {
 		def threadNo = Integer.parseInt(threadStr, 16)
 		def threadHandler = new ThreadHandler(procs, threadNo, this)
