@@ -14,7 +14,7 @@ import org.xml.sax.*
  */
 class JalanParse {
 	
-	JalanParse(def threads, def execute, def baseName, def controlName,
+	JalanParse(def threads, def execute, def baseName, def control,
 		def fileName)
 	{
 		if (threads) {
@@ -27,15 +27,15 @@ class JalanParse {
 		}
 		if (execute) {
 			println "Timing execution"
-			if (!controlName) { 
+			if (!control) { 
 				def threadMapper = new MappingHandler(baseName)
 				def mapIn =
 					SAXParserFactory.newInstance().newSAXParser().XMLReader
 				mapIn.setContentHandler(threadMapper)
 				mapIn.parse(new InputSource(new FileInputStream(fileName)))
 			} else {
-				println "Using control file ${controlName}"
-				def executioner = new ExecutionTimer(controlName)
+				println "Using control file ${fileName}"
+				def executioner = new ExecutionTimer(fileName)
 			}
 		}
 	}
@@ -44,13 +44,12 @@ class JalanParse {
 
 
 def cliJalan = new CliBuilder
-	(usage: 'Jalan [options] XMLFile')
+	(usage: 'Jalan [options] XMLFile\nJalan [options]c ControlFile')
 cliJalan.t(longOpt: 'threads', 'Count threads')
 cliJalan.x(longOpt: 'execution', 'Time execution model')
 cliJalan.b(longOpt: 'basename', args:1, argName:'filename',
 	optionalArg:true, 'Name for thread records')
-cliJalan.c(longOpt: 'controlname', args:1, argName: 'controlname',
-	optionalArg: false, 'Name for control flag (supercedes \'b\' option)')
+cliJalan.c(longOpt: 'control', 'Use control file (supercedes \'b\' option)')
 
 def jArgs = cliJalan.parse(args)
 
@@ -63,21 +62,21 @@ if (jArgs.u || args.size()==0) {
 	}
 	def execute = false
 	def basename = "${new Date().time.toString()}"
-	def controlname = ""
+	def control = false
 	
 	if (jArgs.x) {
 		execute = true
 	}
 	if (jArgs.c) {
+		control = true
 		execute = true
-		controlname = jArgs.c
 	}
 	else if (jArgs.b) {
 		execute = true
 		basename = jArgs.b
 	}
 	
-	new JalanParse(threads, execute, basename, controlname,
+	new JalanParse(threads, execute, basename, control,
 		args[args.size() - 1])
 	
 }

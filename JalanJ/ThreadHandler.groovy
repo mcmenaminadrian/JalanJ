@@ -31,10 +31,6 @@ class ThreadHandler extends DefaultHandler {
 		myProcessor = -1
 	}
 	
-	def findPage = {processor, address ->
-		processor.gotPage(address)
-	}
-	
 	def allocatePage = {processor, address ->
 		processor.allocateToFree(address)
 	}
@@ -44,7 +40,7 @@ class ThreadHandler extends DefaultHandler {
 	{
 		waitOne = new Semaphore(0)
 		master.signalTick()
-		waitCount.aquire()
+		waitOne.acquire()
 	}
 	
 	//check if we have a processor and attempt to assign one if we don't
@@ -75,7 +71,7 @@ class ThreadHandler extends DefaultHandler {
 	
 	void addressRead(long address)
 	{
-		if (!processorList.find(findPage(it, address)))
+		if (!processorList.find{it.gotPage(address)})
 		{
 			def countDown = 100
 			waitState = true
@@ -87,11 +83,11 @@ class ThreadHandler extends DefaultHandler {
 			//Do we still hold the processor?
 			getProcessor()
 			//we might have the page by now
-			if (processorList.find(findPage(it, address))) {
+			if (processorList.find{it.gotPage(address)}) {
 				waitForTick()
 				return
 			} else {
-				if (processorList.find(allocateToFree(it, address))) {
+				if (processorList.find{it.gotPage(address)}) {
 				waitForTick()
 				return
 				}

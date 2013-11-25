@@ -3,7 +3,8 @@
  */
 package JalanJ
 
-import org.xml.sax.Attributes;
+import org.xml.sax.Attributes
+import javax.xml.parsers.SAXParserFactory
 import org.xml.sax.*
 
 /**
@@ -17,7 +18,7 @@ class ExecutionTimer {
 	
 	def controlFile
 	long timeElapsed
-	def parsers = []
+	def handlers = []
 	def processors = []
 	def threadMap = [:]
 	def PROCESSORS = 16
@@ -29,15 +30,16 @@ class ExecutionTimer {
 	{
 		controlFile = fileStr
 		timeElapsed = 0
-		(1 .. PROCESSORS)
+		for (i in 1 .. PROCESSORS)
 		{
 			processors << new ProcessorState()
 		}
+		timeExecution()
 	}
 	
 	void addThreadMap(def number, def path)
 	{
-		threadMap.put(number, path)
+		threadMap[number] = path
 	}
 	
 	void setFirstThread(def number)
@@ -51,7 +53,7 @@ class ExecutionTimer {
 			it.clockTick()
 		}
 		
-		parsers.each {
+		handlers.each {
 			if (it.waitOne) {
 				it.waitOne.release(1)
 			}
@@ -59,16 +61,18 @@ class ExecutionTimer {
 	}
 
 	
-	def handleThread = Thread.start {threadStr, processorList ->
+	def handleThread(def threadStr, def procs){
+		Thread.start {
 		def threadNo = Integer.parseInt(threadStr, 16)
-		def threadHandler = new ThreadHandler(processorList, threadNo, this)
+		def threadHandler = new ThreadHandler(procs, threadNo, this)
 		def threadIn =
 			SAXParserFactory.newInstance().newSAXParser().XMLReader
 		threadIn.setContentHandler(threadHandler)
-		parsers << threadIn
+		handlers << threadHandler
 		threadIn.parse(
 			new InputSource(new FileInputStream(threadMap[threadStr]))
 			)
+		}
 	}
 	
 	synchronized void signalTick()
@@ -85,8 +89,7 @@ class ExecutionTimer {
 		activeThreads = 1
 		signalledThreads = 0
 		//this is the first thread, so we just allocate a processor
-		ProcessorState[0].activeThread = firstThread.toInteger()
-		
+		processors[0].activeThread = firstThread.toInteger()
 		handleThread(firstThread, processors)
 	
 	}
@@ -104,5 +107,4 @@ class ExecutionTimer {
 		
 		return timeElapsed
 	}
-
 }

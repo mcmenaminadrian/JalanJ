@@ -35,7 +35,7 @@ class ProcessorState {
 	
 	synchronized def gotPage(long address)
 	{
-		long pageNnumber = address >> PAGESHIFT
+		long pageNumber = address >> PAGESHIFT
 		if (localMemory[pageNumber]) {
 			localMemory[pageNumber] = 1
 			return true
