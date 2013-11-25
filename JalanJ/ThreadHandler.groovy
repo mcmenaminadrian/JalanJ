@@ -119,14 +119,14 @@ class ThreadHandler extends DefaultHandler {
 			def address = Long.parseLong(attrs.getValue('address'), 16)
 			addressRead(address)
 			addressRead(address)
-			break;
+			break
 			
 			case 'spawn':
 			//start a new thread
 			def nextThread = attrs.getValue('thread')
 			master.handleThread(nextThread, master.processorList)
 			println "Have spawned thread ${nextThread} after ${master.timeElapsed} ticks"
-			
+			break
 		}
 		
 	}
