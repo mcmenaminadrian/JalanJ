@@ -114,6 +114,8 @@ class MappingHandler extends DefaultHandler {
 		}
 		writer.write("</threadrecordml>\n")
 		writer.close()
+		
+		def executioner = new ExecutionTimer("${groupingName}_control.xml")
 	}
 	
 }
