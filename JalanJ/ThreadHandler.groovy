@@ -124,7 +124,7 @@ class ThreadHandler extends DefaultHandler {
 			case 'spawn':
 			//start a new thread
 			def nextThread = attrs.getValue('thread')
-			master.handleThread(nextThread, master.processors)
+			master.handleThread(nextThread, processorList)
 			println "Have spawned thread ${nextThread} after ${master.timeElapsed} ticks"
 			break
 		}
