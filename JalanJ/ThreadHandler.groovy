@@ -130,5 +130,10 @@ class ThreadHandler extends DefaultHandler {
 		}
 		
 	}
+		
+	void endDocument()
+	{
+		println "Thread $threadNumber finished at tick ${master.timeElapsed}"
+	}
 	
 }
