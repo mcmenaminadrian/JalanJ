@@ -3,6 +3,8 @@
  */
 package JalanJ
 
+import java.util.TreeMap.PrivateEntryIterator;
+
 /**
  * @author adrian
  *
@@ -19,6 +21,7 @@ class ProcessorState {
 	def MAXSIZE = 32 * 1024
 	def PAGESHIFT = 4
 	def PAGEMASK = PAGESHIFT - 1
+	def PAGESIZE = 1 << PAGESHIFT
 	
 	ProcessorState() {
 		countdownTimer = 0
@@ -39,30 +42,28 @@ class ProcessorState {
 		if (localMemory[pageNumber]) {
 			localMemory[pageNumber] = 1
 			return true
-		} else {
+		} else
 			return false
-		}
 	}
 	
 	synchronized void clockTick()
 	{
 		localMemory.each { key, value ->
-			if (value > 0) {
+			if (value > 0)
 				localMemory[key] = value - 1
-			}
 		}
 	}
 	
 	synchronized def allocateToFree(long address)
 	{
-		if (localMemory.size() * pageSize < MAXSIZE) {
+		if (localMemory.size() * PAGESIZE < MAXSIZE) {
 			localMemory[address >> PAGESHIFT] = 1
 			return true
 		}
 		return false
 	}
 	
-	synchronized void dumpPage()
+	private void dumpPage()
 	{
 		//find minimum value and remove first that matches
 		def minReference = localMemory.min{it.value}
@@ -71,16 +72,13 @@ class ProcessorState {
 	
 	synchronized void addPage(long address)
 	{
-		def pageSize = 1 << PAGESHIFT
-		if (localMemory.size() * pageSize >= MAXSIZE) {
+		if (localMemory.size() * PAGESIZE >= MAXSIZE) {
 			dumpPage()
 		}
-		if (!gotPage(address)) {
-			localMemory[address >> PAGESHIFT] = 1
-		}
+		localMemory[address >> PAGESHIFT] = 1
 	}
 	
-	synchronized def matchThread(def threadNo)
+	def matchThread(def threadNo)
 	{
 		return (threadNo == activeThread)
 	}

@@ -81,6 +81,20 @@ class ExecutionTimer {
 		}
 	}
 	
+	synchronized def handleFirstThread(def threadStr, def procs){
+		Thread.start {
+		def threadNo = Integer.parseInt(threadStr, 16)
+		def threadHandler = new FirstThreadHandler(procs, threadNo, this)
+		def threadIn =
+			SAXParserFactory.newInstance().newSAXParser().XMLReader
+		threadIn.setContentHandler(threadHandler)
+		handlers << threadHandler
+		threadIn.parse(
+			new InputSource(new FileInputStream(threadMap[threadStr]))
+			)
+		}
+	}
+	
 	synchronized void signalTick()
 	{
 		if (++signalledThreads == activeThreads) {
@@ -96,7 +110,7 @@ class ExecutionTimer {
 		signalledThreads = 0
 		//this is the first thread, so we just allocate a processor
 		processors[0].activeThread = firstThread.toInteger()
-		handleThread(firstThread, processors)
+		handleFirstThread(firstThread, processors)
 	
 	}
 	

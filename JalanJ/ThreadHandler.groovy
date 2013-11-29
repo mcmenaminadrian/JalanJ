@@ -1,6 +1,4 @@
-/**
- * 
- */
+
 package JalanJ
 
 import org.xml.sax.Attributes;
@@ -71,30 +69,21 @@ class ThreadHandler extends DefaultHandler {
 	
 	void addressRead(long address)
 	{
-		if (!processorList.find{it.gotPage(address)})
-		{
-			def countDown = 100
-			waitState = true
-			while (countDown > 0) {
+		def havePage = false
+		def countDown = 100
+		getProcessor()
+		while (countDown > 0) {
+			if (!processorList.find {it.gotPage(address)}) {
+				waitState = true
 				waitForTick()
 				countDown--
-			}
-			
-			//Do we still hold the processor?
-			getProcessor()
-			//we might have the page by now
-			if (processorList.find{it.gotPage(address)}) {
-				waitForTick()
-				return
 			} else {
-				if (processorList.find{it.gotPage(address)}) {
-				waitForTick()
-				return
-				}
-				//cannot allocate to free page, so dump a page
-				processorList[myProcessor].addPage(address)
+				havePage = true
+				break
 			}
 		}
+		if (!havePage)
+			processorList[myProcessor].addPage(address)
 		waitForTick()
 	}
 	
