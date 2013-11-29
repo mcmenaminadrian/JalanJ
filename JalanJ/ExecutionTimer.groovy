@@ -25,14 +25,20 @@ class ExecutionTimer {
 	def firstThread
 	def activeThreads
 	def signalledThreads
+	def guiOutput
+	def guiWindow
 	
-	ExecutionTimer(def fileStr)
+	ExecutionTimer(def fileStr, def gui)
 	{
+		guiOutput = gui
 		controlFile = fileStr
 		timeElapsed = 0
 		for (i in 1 .. PROCESSORS)
 		{
 			processors << new ProcessorState()
+		}
+		if (gui) {
+			guiWindow = new GuiWindow(this)
 		}
 		timeExecution()
 	}

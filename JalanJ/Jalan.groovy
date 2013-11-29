@@ -14,7 +14,7 @@ import org.xml.sax.*
  */
 class JalanParse {
 	
-	JalanParse(def threads, def execute, def baseName, def control,
+	JalanParse(def threads, def execute, def baseName, def control, def gui,
 		def fileName)
 	{
 		if (threads) {
@@ -35,7 +35,7 @@ class JalanParse {
 				mapIn.parse(new InputSource(new FileInputStream(fileName)))
 			} else {
 				println "Using control file ${fileName}"
-				def executioner = new ExecutionTimer(fileName)
+				def executioner = new ExecutionTimer(fileName, gui)
 			}
 		}
 	}
@@ -50,6 +50,7 @@ cliJalan.x(longOpt: 'execution', 'Time execution model')
 cliJalan.b(longOpt: 'basename', args:1, argName:'filename',
 	optionalArg:true, 'Name for thread records')
 cliJalan.c(longOpt: 'control', 'Use control file (supercedes \'b\' option)')
+cliJalan.g(longOpt: 'gui', "Display GUI output (default is text only)")
 
 def jArgs = cliJalan.parse(args)
 
@@ -63,6 +64,11 @@ if (jArgs.u || args.size()==0) {
 	def execute = false
 	def basename = "${new Date().time.toString()}"
 	def control = false
+	def gui = false
+	
+	if (jArgs.g) {
+		gui = true
+	}
 	
 	if (jArgs.x) {
 		execute = true
@@ -76,7 +82,7 @@ if (jArgs.u || args.size()==0) {
 		basename = jArgs.b
 	}
 	
-	new JalanParse(threads, execute, basename, control,
+	new JalanParse(threads, execute, basename, control, gui,
 		args[args.size() - 1])
 	
 }
