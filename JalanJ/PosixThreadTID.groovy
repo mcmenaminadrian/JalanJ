@@ -1,4 +1,4 @@
-package JalanJ
+package jalanJ
 
 import groovy.xml.MarkupBuilder
 

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package JalanJ
+package jalanJ
 
 import groovy.swing.SwingBuilder
 import java.util.timer.*
