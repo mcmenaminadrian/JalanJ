@@ -20,13 +20,14 @@ class FirstThreadHandler extends ThreadHandler {
 	FirstThreadHandler(def processors, def threadNo, def callback){
 		super(processors, threadNo, callback)
 		noSpawns = true
+		getProcessor()
 	}
 	
 	void addressRead(long address)
 	{
 		if (!processorList.find {it.gotPage(address)}) {
 				master.timeElapsed += 100
-				processorList.addPage(address)
+				processorList[myProcessor].addPage(address)
 			}
 		master.timeElapsed++
 	}

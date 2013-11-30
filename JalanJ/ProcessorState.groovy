@@ -57,7 +57,8 @@ class ProcessorState {
 	synchronized def allocateToFree(long address)
 	{
 		if (localMemory.size() * PAGESIZE < MAXSIZE) {
-			localMemory[address >> PAGESHIFT] = 1
+			long pageNo = address >> PAGESHIFT
+			localMemory[pageNo] = 1
 			return true
 		}
 		return false
@@ -75,7 +76,8 @@ class ProcessorState {
 		if (localMemory.size() * PAGESIZE >= MAXSIZE) {
 			dumpPage()
 		}
-		localMemory[address >> PAGESHIFT] = 1
+		long pageNo = address >> PAGESHIFT
+		localMemory[pageNo] = 1
 	}
 	
 	def matchThread(def threadNo)
