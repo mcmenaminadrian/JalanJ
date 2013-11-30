@@ -27,10 +27,7 @@ class FirstThreadHandler extends ThreadHandler {
 	{
 		if (!processorList.find {it.gotPage(address)}) {
 				master.timeElapsed += 100
-				if (!processorList[myProcessor].allocateToFree(address))
-					if (!processorList.find{it.allocateToFree(address)})
-						//dump a local page as all else has failed
-						processorList[myProcessor].addPage(address)
+				processorList.find{it.addPage(address)}
 			}
 		waitForTick()
 	}

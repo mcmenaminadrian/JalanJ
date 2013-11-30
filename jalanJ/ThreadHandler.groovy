@@ -29,10 +29,6 @@ class ThreadHandler extends DefaultHandler {
 		myProcessor = -1
 	}
 	
-	def allocatePage = {processor, address ->
-		processor.allocateToFree(address)
-	}
-	
 	//wait for next global clock tick
 	void waitForTick()
 	{
@@ -82,11 +78,8 @@ class ThreadHandler extends DefaultHandler {
 				break
 			}
 		}
-		if (!havePage) {
-			if (!processorList[myProcessor].allocateToFree(address))
-				if (!processorList.find{it.allocateToFree(address)})
-					processorList[myProcessor].addPage(address)
-		}
+		if (!havePage) 
+			processorList.find{ it.addPage(address)}
 		waitForTick()
 	}
 	

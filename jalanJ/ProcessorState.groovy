@@ -3,8 +3,6 @@
  */
 package jalanJ
 
-import java.util.TreeMap.PrivateEntryIterator;
-
 /**
  * @author adrian
  *
@@ -17,7 +15,7 @@ class ProcessorState {
 	long instructionCount
 	def startProcessor
 	long startProcessorInstructionCount
-	def localMemory =[:]
+	def localMemory
 	def MAXSIZE = 32 * 1024
 	def PAGESHIFT = 4
 	def PAGESIZE = 1 << PAGESHIFT
@@ -29,6 +27,7 @@ class ProcessorState {
 		activeThread = -1
 		instructionCount = 0L
 		everyOther = 0
+		localMemory = new StackAllocator(PAGESHIFT, MAXSIZE)
 	}
 	
 	
@@ -39,53 +38,17 @@ class ProcessorState {
 	
 	synchronized def gotPage(long address)
 	{
-		long pageNumber = address >> PAGESHIFT
-		if (localMemory[pageNumber]) {
-			if (localMemory[pageNumber] < 2)
-				localMemory[pageNumber] += 1
-			return true
-		} else
-			return false
+		return localMemory.havePage(address)
 	}
 	
 	synchronized void clockTick()
 	{
-		if (everyOther) {
-			localMemory.each { key, value ->
-				if (value > 0)
-					localMemory[key] -= 1	
-			}
-			everyOther = 0
-		} else
-			everyOther = 1
+		
 	}
 	
-	synchronized def allocateToFree(long address)
+	synchronized def addPage(long address)
 	{
-		if (localMemory.size() * PAGESIZE < MAXSIZE) {
-			long pageNumber = address >> PAGESHIFT
-			localMemory[pageNumber] = 1
-			return true
-		}
-		if (everyOther)
-			dumpPage()
-		return false
-	}
-	
-	private void dumpPage()
-	{
-		//find minimum value and remove first that matches
-		def minReference = localMemory.min{it.value}
-		localMemory.remove(minReference.key)
-	}
-	
-	synchronized void addPage(long address)
-	{
-		if (localMemory.size() * PAGESIZE >= MAXSIZE) {
-			dumpPage()
-		}
-		long pageNumber = address >> PAGESHIFT
-		localMemory[pageNumber] = 1
+		return localMemory.allocatePage(address)
 	}
 	
 	def matchThread(def threadNo)
