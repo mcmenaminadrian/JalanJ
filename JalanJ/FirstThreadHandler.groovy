@@ -27,9 +27,21 @@ class FirstThreadHandler extends ThreadHandler {
 	{
 		if (!processorList.find {it.gotPage(address)}) {
 				master.timeElapsed += 100
-				processorList[myProcessor].addPage(address)
+				if (!processorList[myProcessor].allocateToFree(address))
+					if (!processorList.find{it.allocateToFree(address)})
+						//dump a local page as all else has failed
+						processorList[myProcessor].addPage(address)
 			}
-		master.timeElapsed++
+		waitForTick()
+	}
+	
+	//wait for next global clock tick
+	void waitForTick()
+	{
+		if (!noSpawns)
+			super.waitForTick()
+		else
+			master.signalTick()
 	}
 	
 	void startElement(String ns, String localName, String qName,

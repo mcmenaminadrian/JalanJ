@@ -82,8 +82,11 @@ class ThreadHandler extends DefaultHandler {
 				break
 			}
 		}
-		if (!havePage)
-			processorList[myProcessor].addPage(address)
+		if (!havePage) {
+			if (!processorList[myProcessor].allocateToFree(address))
+				if (!processorList.find{it.allocateToFree(address)})
+					processorList[myProcessor].addPage(address)
+		}
 		waitForTick()
 	}
 	

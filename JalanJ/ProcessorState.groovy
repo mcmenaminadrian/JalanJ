@@ -20,14 +20,15 @@ class ProcessorState {
 	def localMemory =[:]
 	def MAXSIZE = 32 * 1024
 	def PAGESHIFT = 4
-	def PAGEMASK = PAGESHIFT - 1
 	def PAGESIZE = 1 << PAGESHIFT
+	def everyOther
 	
 	ProcessorState() {
 		countdownTimer = 0
 		waitState = false
 		activeThread = -1
 		instructionCount = 0L
+		everyOther = 0
 	}
 	
 	
@@ -40,7 +41,8 @@ class ProcessorState {
 	{
 		long pageNumber = address >> PAGESHIFT
 		if (localMemory[pageNumber]) {
-			localMemory[pageNumber] = 1
+			if (localMemory[pageNumber] < 2)
+				localMemory[pageNumber] += 1
 			return true
 		} else
 			return false
@@ -48,19 +50,25 @@ class ProcessorState {
 	
 	synchronized void clockTick()
 	{
-		localMemory.each { key, value ->
-			if (value > 0)
-				localMemory[key] = value - 1
-		}
+		if (everyOther) {
+			localMemory.each { key, value ->
+				if (value > 0)
+					localMemory[key] -= 1	
+			}
+			everyOther = 0
+		} else
+			everyOther = 1
 	}
 	
 	synchronized def allocateToFree(long address)
 	{
 		if (localMemory.size() * PAGESIZE < MAXSIZE) {
-			long pageNo = address >> PAGESHIFT
-			localMemory[pageNo] = 1
+			long pageNumber = address >> PAGESHIFT
+			localMemory[pageNumber] = 1
 			return true
 		}
+		if (everyOther)
+			dumpPage()
 		return false
 	}
 	
@@ -76,8 +84,8 @@ class ProcessorState {
 		if (localMemory.size() * PAGESIZE >= MAXSIZE) {
 			dumpPage()
 		}
-		long pageNo = address >> PAGESHIFT
-		localMemory[pageNo] = 1
+		long pageNumber = address >> PAGESHIFT
+		localMemory[pageNumber] = 1
 	}
 	
 	def matchThread(def threadNo)
