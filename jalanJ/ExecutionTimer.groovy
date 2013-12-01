@@ -57,14 +57,13 @@ class ExecutionTimer {
 	
 	void tickOver()
 	{
-		processors.each {
+	/*	processors.each {
 			it.clockTick()
-		}
+		} */
 		
 		handlers.each {
-			if (it.waitOne) {
+			if (it.waitOne)
 				it.waitOne.release(1)
-			}
 		}
 	}
 

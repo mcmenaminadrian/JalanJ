@@ -17,6 +17,7 @@ class GuiWindow extends SwingBuilder {
 	def frame
 	def tickCounter
 	def faultCounter
+	def writer
 	long previousCount
 	Closure countUp
 	Closure firstCount
@@ -38,6 +39,8 @@ class GuiWindow extends SwingBuilder {
 				}
 			}
 		}
+		writer = new FileWriter("DATA${new Date().time.toString()}.txt")
+		writer.write("Ticks, Fault Rate\n")
 		frame.pack()
 		frame.show()
 		
@@ -51,10 +54,11 @@ class GuiWindow extends SwingBuilder {
 			faultCounter.text = faultRate
 			tickCounter.repaint()
 			faultCounter.repaint()
+			writer.write("${newCount}, ${faultRate}\n")
 			new Timer().runAfter(5000, countUp)
 		}
 		
-		firstCount = {
+		firstCount = {	
 			new Timer().runAfter(5000, countUp)
 		}
 		

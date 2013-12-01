@@ -8,28 +8,22 @@ package jalanJ
  *
  */
 class ProcessorState {
-	
-	def countdownTimer
+
 	def waitState
 	def activeThread
-	long instructionCount
 	def startProcessor
-	long startProcessorInstructionCount
-	def localMemory
+	static def localMemory
 	def MAXSIZE = 32 * 1024
 	def PAGESHIFT = 9
 	def PAGESIZE = 1 << PAGESHIFT
-	def everyOther
 	
 	ProcessorState() {
-		countdownTimer = 0
 		waitState = false
 		activeThread = -1
-		instructionCount = 0L
-		everyOther = 0
-		localMemory = new StackAllocator(PAGESHIFT, MAXSIZE)
+		if (!localMemory) {
+			localMemory = new QueueAllocator(PAGESHIFT, MAXSIZE * 16)
+		}
 	}
-	
 	
 	synchronized void setThread(def thread)
 	{
@@ -41,7 +35,7 @@ class ProcessorState {
 		return localMemory.havePage(address)
 	}
 	
-	synchronized void clockTick()
+	void clockTick()
 	{
 		
 	}
