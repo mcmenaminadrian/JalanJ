@@ -16,17 +16,21 @@ class GuiWindow extends SwingBuilder {
 	def controlObject
 	def frame
 	def tickCounter
+	def faultCounter
+	long previousCount
 	Closure countUp
+	Closure firstCount
 	
 	GuiWindow(def controller)
 	{
 		super()
+		previousCount = 0
 		controlObject = controller
 		frame = this.frame(title:'JalanJ') {
 			panel {
 				tickCounter = textField(columns:15, text:'0',
 					editable: false){}
-				textField(id:'activeThreads', columns:3, text: '0',
+				faultCounter = textField(columns:3, text: '0',
 					editable: false){}
 				for (i in 0 .. controlObject.PROCESSORS) {
 					textField(id:'processor_${i}', columns:3, text:"$i",
@@ -37,13 +41,24 @@ class GuiWindow extends SwingBuilder {
 		frame.pack()
 		frame.show()
 		
+		
 		countUp = {
-			tickCounter.text = controlObject.timeElapsed
+			long newCount = controlObject.timeElapsed
+			Integer faultRate = controlObject.getFaultCount() * 
+					(1000000/(newCount - previousCount))
+			previousCount = newCount
+			tickCounter.text = newCount
+			faultCounter.text = faultRate
 			tickCounter.repaint()
-			new Timer().runAfter(500, countUp)
+			faultCounter.repaint()
+			new Timer().runAfter(5000, countUp)
 		}
 		
-		countUp()
+		firstCount = {
+			new Timer().runAfter(5000, countUp)
+		}
+		
+		firstCount()
 		
 	}
 }

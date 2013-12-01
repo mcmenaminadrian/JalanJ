@@ -27,6 +27,7 @@ class FirstThreadHandler extends ThreadHandler {
 	{
 		if (!processorList.find {it.gotPage(address)}) {
 				master.timeElapsed += 100
+				master.incrementFaultCount()
 				processorList.find{it.addPage(address)}
 			}
 		waitForTick()

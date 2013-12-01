@@ -27,6 +27,7 @@ class ExecutionTimer {
 	def signalledThreads
 	def guiOutput
 	def guiWindow
+	def faultCount
 	
 	ExecutionTimer(def fileStr, def gui)
 	{
@@ -40,6 +41,7 @@ class ExecutionTimer {
 		if (gui) {
 			guiWindow = new GuiWindow(this)
 		}
+		faultCount = 0
 		timeExecution()
 	}
 	
@@ -112,6 +114,19 @@ class ExecutionTimer {
 		processors[0].activeThread = firstThread.toInteger()
 		handleFirstThread(firstThread, processors)
 	
+	}
+	
+	
+	synchronized void incrementFaultCount()
+	{
+		faultCount++
+	}
+	
+	def getFaultCount()
+	{
+		def oldFaultCount = faultCount
+		faultCount = 0
+		return oldFaultCount
 	}
 	
 	def timeExecution()

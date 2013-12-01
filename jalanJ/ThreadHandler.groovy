@@ -78,8 +78,10 @@ class ThreadHandler extends DefaultHandler {
 				break
 			}
 		}
-		if (!havePage) 
+		if (!havePage) {
+			master.incrementFaultCount() 
 			processorList.find{ it.addPage(address)}
+		}
 		waitForTick()
 	}
 	

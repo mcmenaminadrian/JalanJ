@@ -57,7 +57,6 @@ class StackAllocator implements PagingAllocator {
 	 */
 	@Override
 	public void setPageOffset(int bits) {
-		// TODO Auto-generated method stub
 		PAGESHIFT = bits
 	}
 
@@ -66,7 +65,6 @@ class StackAllocator implements PagingAllocator {
 	 */
 	@Override
 	public void setMaxMemory(long bytes) {
-		// TODO Auto-generated method stub
 		memorySize = bytes
 	}
 
