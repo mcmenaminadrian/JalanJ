@@ -40,13 +40,11 @@ class ThreadHandler extends DefaultHandler {
 	//check if we have a processor and attempt to assign one if we don't
 	def getProcessor()
 	{
-		while (true) {
-			for (i in 0 .. processorList.size() - 1) {
-				if (processorList[i].matchThread(threadNumber)) {
-					myProcessor = i
-					waitState = false
-					return i
-				}
+		for (i in 0 .. processorList.size() - 1) {
+			if (processorList[i].matchThread(threadNumber)) {
+				myProcessor = i
+				waitState = false
+				return i
 			}
 		}
 		while (true) {
@@ -69,7 +67,8 @@ class ThreadHandler extends DefaultHandler {
 		def countDown = 100
 		getProcessor()
 		while (countDown > 0) {
-			if (!processorList.find {it.gotPage(address)}) {
+		//	if (!processorList.find {it.gotPage(address)}) {
+			if (processorList[0].gotPage(address)) {
 				waitState = true
 				waitForTick()
 				countDown--
