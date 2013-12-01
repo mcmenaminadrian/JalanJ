@@ -17,7 +17,7 @@ class GuiWindow extends SwingBuilder {
 	def frame
 	def tickCounter
 	def faultCounter
-	def writer
+	FileWriter writer
 	long previousCount
 	Closure countUp
 	Closure firstCount
@@ -40,7 +40,7 @@ class GuiWindow extends SwingBuilder {
 			}
 		}
 		writer = new FileWriter("DATA${new Date().time.toString()}.txt")
-		writer.write("Ticks, Fault Rate\n")
+		writer.write("Count, Rate\n")
 		frame.pack()
 		frame.show()
 		
