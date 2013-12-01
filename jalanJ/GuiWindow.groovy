@@ -41,6 +41,7 @@ class GuiWindow extends SwingBuilder {
 		}
 		writer = new FileWriter("DATA${new Date().time.toString()}.txt")
 		writer.write("Count, Rate\n")
+		writer.flush()
 		frame.pack()
 		frame.show()
 		
@@ -55,6 +56,7 @@ class GuiWindow extends SwingBuilder {
 			tickCounter.repaint()
 			faultCounter.repaint()
 			writer.write("${newCount}, ${faultRate}\n")
+			writer.flush()
 			new Timer().runAfter(5000, countUp)
 		}
 		
