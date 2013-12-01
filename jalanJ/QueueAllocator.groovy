@@ -7,14 +7,14 @@ package jalanJ
  * @author adrian
  * Crude stack based memory allocator
  */
-class StackAllocator implements PagingAllocator {
+class QueueAllocator implements PagingAllocator {
 
 	def topOfStack
 	def memorySize
 	def PAGESHIFT
 	def memoryStack = [] as Queue
 	
-	StackAllocator(def pageOff, def memSize)
+	QueueAllocator(def pageOff, def memSize)
 	{
 		setPageOffset(pageOff)
 		setMaxMemory(memSize)
