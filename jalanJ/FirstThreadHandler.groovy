@@ -27,7 +27,7 @@ class FirstThreadHandler extends ThreadHandler {
 	{
 	//	if (!processorList.find {it.gotPage(address)}) {
 		if (!processorList[0].gotPage(address)) {
-				master.timeElapsed += 100
+				master.timeElapsed += 100 * memoryWidth
 				master.incrementFaultCount()
 				processorList.find{it.addPage(address)}
 			}

@@ -17,7 +17,7 @@ class ProcessorState {
 	long startProcessorInstructionCount
 	def localMemory
 	def MAXSIZE = 32 * 1024
-	def PAGESHIFT = 4
+	def PAGESHIFT = 9
 	def PAGESIZE = 1 << PAGESHIFT
 	def everyOther
 	

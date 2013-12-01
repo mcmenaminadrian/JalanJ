@@ -17,6 +17,8 @@ class ThreadHandler extends DefaultHandler {
 	def master
 	def waitState
 	def myProcessor
+	def memoryWidth
+	def instructionCount
 	
 	
 	ThreadHandler(def processors, def threadNo, def callback)
@@ -27,6 +29,7 @@ class ThreadHandler extends DefaultHandler {
 		master = callback
 		waitState = false
 		myProcessor = -1
+		memoryWidth = processors[0].PAGESIZE/16
 	}
 	
 	//wait for next global clock tick
@@ -64,7 +67,7 @@ class ThreadHandler extends DefaultHandler {
 	void addressRead(long address)
 	{
 		def havePage = false
-		def countDown = 100
+		def countDown = 100 * memoryWidth
 		getProcessor()
 		while (countDown > 0) {
 		//	if (!processorList.find {it.gotPage(address)}) {
