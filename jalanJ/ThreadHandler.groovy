@@ -68,7 +68,7 @@ class ThreadHandler extends DefaultHandler {
 		getProcessor()
 		while (countDown > 0) {
 		//	if (!processorList.find {it.gotPage(address)}) {
-			if (processorList[0].gotPage(address)) {
+			if (!processorList[0].gotPage(address)) {
 				waitState = true
 				waitForTick()
 				countDown--
