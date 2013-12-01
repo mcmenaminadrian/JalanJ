@@ -41,7 +41,8 @@ class StackAllocator implements PagingAllocator {
 	 */
 	@Override
 	synchronized public boolean allocatePage(long address) {
-		// TODO Auto-generated method stub
+		if (havePage(address))
+			return true
 		if (topOfStack + 1 >= memorySize >> PAGESHIFT) {
 			memoryStack.poll()
 			topOfStack--
