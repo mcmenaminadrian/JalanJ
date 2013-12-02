@@ -71,11 +71,11 @@ class GuiWindow extends SwingBuilder {
 				writer.write("\n")
 				writer.flush()
 			}
-			new Timer().runAfter(5000, countUp)
+			new Timer().runAfter(3000, countUp)
 		}
 		
 		firstCount = {	
-			new Timer().runAfter(5000, countUp)
+			new Timer().runAfter(3000, countUp)
 		}
 		
 		firstCount()
