@@ -19,7 +19,7 @@ class ThreadHandler extends DefaultHandler {
 	def myProcessor
 	def memoryWidth
 	def instructionCount
-	
+	long perThreadFault
 	
 	ThreadHandler(def processors, def threadNo, def callback)
 	{
@@ -30,6 +30,7 @@ class ThreadHandler extends DefaultHandler {
 		waitState = false
 		myProcessor = -1
 		memoryWidth = processors[0].PAGESIZE/16
+		perThreadFault = 0
 	}
 	
 	//wait for next global clock tick
@@ -81,10 +82,18 @@ class ThreadHandler extends DefaultHandler {
 			}
 		}
 		if (!havePage) {
-			master.incrementFaultCount() 
+			master.incrementFaultCount()
+			perThreadFault++ 
 			processorList.find{ it.addPage(address)}
 		}
 		waitForTick()
+	}
+	
+	synchronized long getPerThreadFaults()
+	{
+		long oldFaultCount = perThreadFault
+		perThreadFault = 0
+		return oldFaultCount
 	}
 	
 	void startElement(String ns, String localName, String qName,

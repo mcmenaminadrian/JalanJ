@@ -40,7 +40,10 @@ class GuiWindow extends SwingBuilder {
 			}
 		}
 		writer = new FileWriter("DATA${new Date().time.toString()}.txt")
-		writer.write("Count, Rate\n")
+		writer.write("Count, Rate")
+		for (i in 1..18)
+			writer.write(", Thread${i}")
+		writer.write("\n")
 		writer.flush()
 		frame.pack()
 		frame.show()
@@ -48,15 +51,26 @@ class GuiWindow extends SwingBuilder {
 		
 		countUp = {
 			long newCount = controlObject.timeElapsed
-			Integer faultRate = controlObject.getFaultCount() * 
-					(1000000/(newCount - previousCount))
-			previousCount = newCount
-			tickCounter.text = newCount
-			faultCounter.text = faultRate
-			tickCounter.repaint()
-			faultCounter.repaint()
-			writer.write("${newCount}, ${faultRate}\n")
-			writer.flush()
+			if (newCount - previousCount > 100000) {
+				Long faultCount = controlObject.getFaultCount()
+				def normalizer = (1000000/(newCount - previousCount))
+				Integer faultRate = faultCount * normalizer
+				previousCount = newCount
+				tickCounter.text = newCount
+				faultCounter.text = faultRate
+				tickCounter.repaint()
+				faultCounter.repaint()
+
+				writer.write("${newCount}, ${faultRate}")
+				for (i in 1..controlObject.handlers.size())
+				{
+					Integer normalizedPerThreadFR = controlObject.
+						handlers[i - 1].getPerThreadFaults() * normalizer
+					writer.write(", $normalizedPerThreadFR")
+				}
+				writer.write("\n")
+				writer.flush()
+			}
 			new Timer().runAfter(5000, countUp)
 		}
 		

@@ -121,7 +121,7 @@ class ExecutionTimer {
 		faultCount++
 	}
 	
-	def getFaultCount()
+	synchronized def getFaultCount()
 	{
 		def oldFaultCount = faultCount
 		faultCount = 0
