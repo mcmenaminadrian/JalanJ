@@ -55,7 +55,7 @@ class ExecutionTimer {
 		firstThread = number
 	}
 	
-	void tickOver()
+	synchronized void tickOver()
 	{
 	/*	processors.each {
 			it.clockTick()
