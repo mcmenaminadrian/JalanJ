@@ -100,7 +100,6 @@ class ExecutionTimer {
 	{
 		if (++signalledThreads == activeThreads) {
 			signalledThreads = 0
-			timeElapsed++
 			tickOver()
 		}
 	}

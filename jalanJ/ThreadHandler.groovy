@@ -20,6 +20,7 @@ class ThreadHandler extends DefaultHandler {
 	def memoryWidth
 	def instructionCount
 	long perThreadFault
+	def tickOn
 	
 	ThreadHandler(def processors, def threadNo, def callback)
 	{
@@ -31,14 +32,18 @@ class ThreadHandler extends DefaultHandler {
 		myProcessor = -1
 		memoryWidth = processors[0].PAGESIZE/16
 		perThreadFault = 0
+		tickOn = 0
 	}
 	
 	//wait for next global clock tick
 	void waitForTick()
 	{
-		waitOne = new Semaphore(0)
-		master.signalTick()
-		waitOne.acquire()
+		if (++tickOn >= 100) {
+			waitOne = new Semaphore(0)
+			master.signalTick()
+			waitOne.acquire()
+			tickOn = 0
+		}
 	}
 	
 	//check if we have a processor and attempt to assign one if we don't

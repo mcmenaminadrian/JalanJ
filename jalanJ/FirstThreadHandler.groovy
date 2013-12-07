@@ -38,9 +38,11 @@ class FirstThreadHandler extends ThreadHandler {
 	//wait for next global clock tick
 	void waitForTick()
 	{
-		if (!noSpawns)
+		if (!noSpawns) {
+			master.timeElapsed++
 			super.waitForTick()
-		else
+		}
+		else 
 			master.signalTick()
 	}
 	
