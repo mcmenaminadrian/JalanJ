@@ -47,7 +47,7 @@ class GuiWindow extends SwingBuilder {
 		
 		countUp = {
 			long newCount = controlObject.timeElapsed
-			if (newCount - previousCount > 100000) {
+			if (newCount - previousCount > 1000000) {
 				Long faultCount = controlObject.getFaultCount()
 				def normalizer = (1000000/(newCount - previousCount))
 				Integer faultRate = faultCount * normalizer
@@ -67,7 +67,7 @@ class GuiWindow extends SwingBuilder {
 				writer.write("\n")
 				writer.flush()
 			}
-			new Timer().runAfter(3000, countUp)
+			new Timer().runAfter(5000, countUp)
 		}
 		
 		firstCount = {	

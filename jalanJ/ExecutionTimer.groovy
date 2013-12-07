@@ -42,6 +42,7 @@ class ExecutionTimer {
 			guiWindow = new GuiWindow(this)
 		}
 		faultCount = 0
+		activeThreads = 0
 		timeExecution()
 	}
 	
@@ -60,7 +61,7 @@ class ExecutionTimer {
 	/*	processors.each {
 			it.clockTick()
 		} */
-		
+		timeElapsed += 100000
 		handlers.each {
 			if (it.waitOne)
 				it.waitOne.release(1)

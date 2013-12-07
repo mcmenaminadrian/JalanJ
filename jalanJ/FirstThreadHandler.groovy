@@ -32,18 +32,7 @@ class FirstThreadHandler extends ThreadHandler {
 				perThreadFault++
 				processorList.find{it.addPage(address)}
 			}
-		waitForTick()
-	}
-	
-	//wait for next global clock tick
-	void waitForTick()
-	{
-		if (!noSpawns) {
-			master.timeElapsed++
-			super.waitForTick()
-		}
-		else 
-			master.signalTick()
+		master.timeElapsed++
 	}
 	
 	void startElement(String ns, String localName, String qName,

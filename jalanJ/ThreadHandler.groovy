@@ -39,7 +39,7 @@ class ThreadHandler extends DefaultHandler {
 	//wait for next global clock tick
 	void waitForTick()
 	{
-		if (++tickOn >= 1000000) {
+		if (++tickOn >= 100000) {
 			waitOne = new Semaphore(0)
 			master.signalTick()
 			waitOne.acquire()
