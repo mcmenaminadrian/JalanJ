@@ -33,10 +33,6 @@ class GuiWindow extends SwingBuilder {
 					editable: false){}
 				faultCounter = textField(columns:3, text: '0',
 					editable: false){}
-				for (i in 0 .. controlObject.PROCESSORS) {
-					textField(id:'processor_${i}', columns:3, text:"$i",
-						editable: false){}
-				}
 			}
 		}
 		writer = new FileWriter("DATA${new Date().time.toString()}.txt")

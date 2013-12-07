@@ -33,12 +33,13 @@ class ThreadHandler extends DefaultHandler {
 		memoryWidth = processors[0].PAGESIZE/16
 		perThreadFault = 0
 		tickOn = 0
+		master.activeThreads++
 	}
 	
 	//wait for next global clock tick
 	void waitForTick()
 	{
-		if (++tickOn >= 100) {
+		if (++tickOn >= 1000000) {
 			waitOne = new Semaphore(0)
 			master.signalTick()
 			waitOne.acquire()
