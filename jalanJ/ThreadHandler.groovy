@@ -18,7 +18,7 @@ class ThreadHandler extends DefaultHandler {
 	def waitState
 	def myProcessor
 	def memoryWidth
-	def instructionCount
+	long instructionCount
 	long perThreadFault
 	def tickOn
 	
@@ -34,12 +34,13 @@ class ThreadHandler extends DefaultHandler {
 		perThreadFault = 0
 		tickOn = 0
 		master.activeThreads++
+		instructionCount = 0
 	}
 	
 	//wait for next global clock tick
 	void waitForTick()
 	{
-		if (++tickOn >= 100000) {
+		if (++tickOn >= master.synchCount) {
 			waitOne = new Semaphore(0)
 			master.signalTick()
 			waitOne.acquire()
@@ -77,7 +78,6 @@ class ThreadHandler extends DefaultHandler {
 		def countDown = 100 * memoryWidth
 		getProcessor()
 		while (countDown > 0) {
-		//	if (!processorList.find {it.gotPage(address)}) {
 			if (!processorList[0].gotPage(address)) {
 				waitState = true
 				waitForTick()
@@ -102,6 +102,13 @@ class ThreadHandler extends DefaultHandler {
 		return oldFaultCount
 	}
 	
+	synchronized long getInstructionCount()
+	{
+		long oldInstructionCount = instructionCount
+		instructionCount = 0
+		return oldInstructionCount
+	}
+	
 	void startElement(String ns, String localName, String qName,
 		Attributes attrs) {
 		
@@ -116,6 +123,7 @@ class ThreadHandler extends DefaultHandler {
 			/* FIX ME: we assume for now that allocations are aligned */
 			/* FIX ME: do not account for processor locality yet */
 			addressRead(address)
+			instructionCount++
 			break;
 			
 			case 'modify':
@@ -123,6 +131,7 @@ class ThreadHandler extends DefaultHandler {
 			def address = Long.parseLong(attrs.getValue('address'), 16)
 			addressRead(address)
 			addressRead(address)
+			instructionCount++
 			break
 			
 			case 'spawn':

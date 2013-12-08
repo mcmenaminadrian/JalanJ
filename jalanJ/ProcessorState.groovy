@@ -35,11 +35,6 @@ class ProcessorState {
 		return localMemory.havePage(address)
 	}
 	
-	void clockTick()
-	{
-		
-	}
-	
 	synchronized def addPage(long address)
 	{
 		return localMemory.allocatePage(address)

@@ -48,24 +48,38 @@ class GuiWindow extends SwingBuilder {
 		countUp = {
 			long newCount = controlObject.timeElapsed
 			if (newCount - previousCount > 1000000) {
+				def handlerFR = []
+				def handlerIC = []
+				//collect the data
 				Long faultCount = controlObject.getFaultCount()
+				for (i in 1 .. controlObject.handlers.size())
+				{
+					handlerFR <<
+						controlObject.handlers[i - 1].getPerThreadFaults()
+					handlerIC <<
+						controlObject.handlers[i - 1].getInstructionCount()
+				}
+				//process the data
 				def normalizer = (1000000/(newCount - previousCount))
 				Integer faultRate = faultCount * normalizer
+				//output data
+				writer.write("${newCount}, ${faultRate}")
+				for (i in 1..controlObject.handlers.size())
+				{
+					Integer normalizedPerThreadFR =
+						handlerFR[i - 1] * normalizer
+					writer.write(", $normalizedPerThreadFR")
+					print "$i ---> ${handlerIC[i - 1]} -->"
+					print "$normalizedPerThreadFR --> ${handlerFR[i - 1]}, "
+				}
+				print "\n"
+				writer.write("\n")
+				writer.flush()
 				previousCount = newCount
 				tickCounter.text = newCount
 				faultCounter.text = faultRate
 				tickCounter.repaint()
 				faultCounter.repaint()
-
-				writer.write("${newCount}, ${faultRate}")
-				for (i in 1..controlObject.handlers.size())
-				{
-					Integer normalizedPerThreadFR = controlObject.
-						handlers[i - 1].getPerThreadFaults() * normalizer
-					writer.write(", $normalizedPerThreadFR")
-				}
-				writer.write("\n")
-				writer.flush()
 			}
 			new Timer().runAfter(5000, countUp)
 		}

@@ -28,6 +28,7 @@ class ExecutionTimer {
 	def guiOutput
 	def guiWindow
 	def faultCount
+	def synchCount = 1000
 	
 	ExecutionTimer(def fileStr, def gui)
 	{
@@ -58,10 +59,7 @@ class ExecutionTimer {
 	
 	synchronized void tickOver()
 	{
-	/*	processors.each {
-			it.clockTick()
-		} */
-		timeElapsed += 100000
+		timeElapsed += synchCount
 		handlers.each {
 			if (it.waitOne)
 				it.waitOne.release(1)

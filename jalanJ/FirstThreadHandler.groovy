@@ -53,6 +53,7 @@ class FirstThreadHandler extends ThreadHandler {
 				addressRead(address)
 			else
 				super.addressRead(address)
+			instructionCount++
 			break;
 			
 			case 'modify':
@@ -65,6 +66,7 @@ class FirstThreadHandler extends ThreadHandler {
 				super.addressRead(address)
 				super.addressRead(address)
 			}
+			instructionCount++
 			break
 			
 			case 'spawn':
