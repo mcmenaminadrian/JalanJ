@@ -18,9 +18,11 @@ class GuiWindow extends SwingBuilder {
 	def tickCounter
 	def faultCounter
 	FileWriter writer
+	FileWriter writerIC
 	long previousCount
 	Closure countUp
 	Closure firstCount
+	def COUNT = 1000000
 	
 	GuiWindow(def controller)
 	{
@@ -35,19 +37,26 @@ class GuiWindow extends SwingBuilder {
 					editable: false){}
 			}
 		}
-		writer = new FileWriter("DATA${new Date().time.toString()}.txt")
+		def datum = new Date()
+		writer = new FileWriter("FAULTS${datum.time.toString()}.txt")
+		writerIC = new FileWriter("IC${datum.time.toString()}.txt")
 		writer.write("Count, Rate")
-		for (i in 1..18)
+		writerIC.write("Count")
+		for (i in 1..18) {
 			writer.write(", Thread${i}")
+			writerIC.write(", Thread${i}")
+		}
 		writer.write("\n")
+		writerIC.write("\n")
 		writer.flush()
+		writerIC.flush()
 		frame.pack()
 		frame.show()
 		
 		
 		countUp = {
 			long newCount = controlObject.timeElapsed
-			if (newCount - previousCount > 1000000) {
+			if (newCount - previousCount > COUNT) {
 				def handlerFR = []
 				def handlerIC = []
 				//collect the data
@@ -60,21 +69,22 @@ class GuiWindow extends SwingBuilder {
 						controlObject.handlers[i - 1].getInstructionCount()
 				}
 				//process the data
-				def normalizer = (1000000/(newCount - previousCount))
+				def normalizer = (COUNT/(newCount - previousCount))
 				Integer faultRate = faultCount * normalizer
 				//output data
 				writer.write("${newCount}, ${faultRate}")
+				writerIC.write("${newCount}")
 				for (i in 1..controlObject.handlers.size())
 				{
 					Integer normalizedPerThreadFR =
 						handlerFR[i - 1] * normalizer
 					writer.write(", $normalizedPerThreadFR")
-					print "$i ---> ${handlerIC[i - 1]} -->"
-					print "$normalizedPerThreadFR --> ${handlerFR[i - 1]}, "
+					writerIC.write(", ${handlerIC[i - 1]}")
 				}
-				print "\n"
 				writer.write("\n")
+				writerIC.write("\n")
 				writer.flush()
+				writerIC.flush()
 				previousCount = newCount
 				tickCounter.text = newCount
 				faultCounter.text = faultRate

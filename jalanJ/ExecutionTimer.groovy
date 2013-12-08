@@ -28,7 +28,7 @@ class ExecutionTimer {
 	def guiOutput
 	def guiWindow
 	def faultCount
-	def synchCount = 1000
+	def synchCount = 100
 	
 	ExecutionTimer(def fileStr, def gui, def memModel)
 	{
