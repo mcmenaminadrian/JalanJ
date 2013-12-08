@@ -15,7 +15,7 @@ import org.xml.sax.*
 class JalanParse {
 	
 	JalanParse(def threads, def execute, def baseName, def control, def gui,
-		def fileName)
+		def memModel, def fileName)
 	{
 		if (threads) {
 			println "Counting threads in $fileName"
@@ -35,7 +35,7 @@ class JalanParse {
 				mapIn.parse(new InputSource(new FileInputStream(fileName)))
 			} else {
 				println "Using control file ${fileName}"
-				def executioner = new ExecutionTimer(fileName, gui)
+				def executioner = new ExecutionTimer(fileName, gui, memModel)
 			}
 		}
 	}
@@ -51,6 +51,8 @@ cliJalan.b(longOpt: 'basename', args:1, argName:'filename',
 	optionalArg:true, 'Name for thread records')
 cliJalan.c(longOpt: 'control', 'Use control file (supercedes \'b\' option)')
 cliJalan.g(longOpt: 'gui', "Display GUI output (default is text only)")
+cliJalan.m(longOpt: 'memorymodel', args:1, argName:'type', optionalArg:false,
+	'Memory allocation model: q for queue (default), l for LRU')
 
 def jArgs = cliJalan.parse(args)
 
@@ -65,6 +67,7 @@ if (jArgs.u || args.size()==0) {
 	def basename = "${new Date().time.toString()}"
 	def control = false
 	def gui = false
+	def memModel = "q"
 	
 	if (jArgs.g) {
 		gui = true
@@ -82,7 +85,11 @@ if (jArgs.u || args.size()==0) {
 		basename = jArgs.b
 	}
 	
-	new JalanParse(threads, execute, basename, control, gui,
+	if (jArgs.m) {
+		memModel = jArgs.m
+	}
+	
+	new JalanParse(threads, execute, basename, control, gui, memModel,
 		args[args.size() - 1])
 	
 }

@@ -30,14 +30,14 @@ class ExecutionTimer {
 	def faultCount
 	def synchCount = 1000
 	
-	ExecutionTimer(def fileStr, def gui)
+	ExecutionTimer(def fileStr, def gui, def memModel)
 	{
 		guiOutput = gui
 		controlFile = fileStr
 		timeElapsed = 0
 		for (i in 1 .. PROCESSORS)
 		{
-			processors << new ProcessorState()
+			processors << new ProcessorState(memModel)
 		}
 		if (gui) {
 			guiWindow = new GuiWindow(this)

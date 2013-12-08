@@ -17,11 +17,14 @@ class ProcessorState {
 	def PAGESHIFT = 12
 	def PAGESIZE = 1 << PAGESHIFT
 	
-	ProcessorState() {
+	ProcessorState(def memoryModel) {
 		waitState = false
 		activeThread = -1
 		if (!localMemory) {
-			localMemory = new QueueAllocator(PAGESHIFT, MAXSIZE * 16)
+			if (memoryModel == "q")
+				localMemory = new QueueAllocator(PAGESHIFT, MAXSIZE * 16)
+			else if (memoryModel == "l")
+				localMemory = new SimpleLRUAllocator(PAGESHIFT, MAXSIZE * 16)
 		}
 	}
 	
