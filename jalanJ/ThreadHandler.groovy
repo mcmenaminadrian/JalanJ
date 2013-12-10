@@ -51,10 +51,12 @@ class ThreadHandler extends DefaultHandler {
 	//check if we have a processor and attempt to assign one if we don't
 	def getProcessor()
 	{
+		master.activeThreads--
 		for (i in 0 .. processorList.size() - 1) {
 			if (processorList[i].matchThread(threadNumber)) {
 				myProcessor = i
 				waitState = false
+				master.activeThreads++
 				return i
 			}
 		}
@@ -65,6 +67,7 @@ class ThreadHandler extends DefaultHandler {
 				if (processorList[i].assignThread(threadNumber)) {
 					myProcessor = i
 					waitState = false
+					master.activeThreads++
 					return i
 				}
 			}
@@ -147,6 +150,8 @@ class ThreadHandler extends DefaultHandler {
 	void endDocument()
 	{
 		println "Thread $threadNumber finished at tick ${master.timeElapsed}"
+		activeThreads--
+		myProcessor.deassignThread()
 	}
 	
 }

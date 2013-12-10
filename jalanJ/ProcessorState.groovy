@@ -56,4 +56,9 @@ class ProcessorState {
 		}
 		return false
 	}
+	
+	synchronized void deassignThread()
+	{
+		activeThread = -1
+	}
 }
