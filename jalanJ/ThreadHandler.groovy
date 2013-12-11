@@ -21,6 +21,7 @@ class ThreadHandler extends DefaultHandler {
 	long instructionCount
 	long perThreadFault
 	def tickOn
+	def threads =[]
 	
 	ThreadHandler(def processors, def threadNo, def callback)
 	{
@@ -51,12 +52,10 @@ class ThreadHandler extends DefaultHandler {
 	//check if we have a processor and attempt to assign one if we don't
 	def getProcessor()
 	{
-		master.activeThreads--
 		for (i in 0 .. processorList.size() - 1) {
 			if (processorList[i].matchThread(threadNumber)) {
 				myProcessor = i
 				waitState = false
-				master.activeThreads++
 				return i
 			}
 		}
@@ -67,7 +66,6 @@ class ThreadHandler extends DefaultHandler {
 				if (processorList[i].assignThread(threadNumber)) {
 					myProcessor = i
 					waitState = false
-					master.activeThreads++
 					return i
 				}
 			}
@@ -79,10 +77,13 @@ class ThreadHandler extends DefaultHandler {
 	{
 		def havePage = false
 		def countDown = 100 * memoryWidth
-		getProcessor()
 		while (countDown > 0) {
 			if (!processorList[0].gotPage(address)) {
 				waitState = true
+				if (myProcessor > 0) {
+					processorList[myProcessor].deassignThread()
+					myProcessor = -1
+				}
 				waitForTick()
 				countDown--
 			} else {
@@ -95,6 +96,7 @@ class ThreadHandler extends DefaultHandler {
 			perThreadFault++ 
 			processorList.find{ it.addPage(address)}
 		}
+		getProcessor()
 		waitForTick()
 	}
 	
@@ -150,8 +152,9 @@ class ThreadHandler extends DefaultHandler {
 	void endDocument()
 	{
 		println "Thread $threadNumber finished at tick ${master.timeElapsed}"
-		activeThreads--
-		myProcessor.deassignThread()
+		master.activeThreads--
+		processorList[myProcessor].deassignThread()
+		myProcessor = -1
 	}
 	
 }

@@ -4,7 +4,8 @@
 package jalanJ
 
 import org.xml.sax.Attributes;
-
+import javax.xml.parsers.SAXParserFactory
+import org.xml.sax.*
 
 
 
@@ -17,10 +18,11 @@ class FirstThreadHandler extends ThreadHandler {
 	
 	def noSpawns
 	
+	
 	FirstThreadHandler(def processors, def threadNo, def callback){
 		super(processors, threadNo, callback)
 		noSpawns = true
-		getProcessor()
+		myProcessor = getProcessor()
 	}
 	
 	void addressRead(long address)
@@ -29,7 +31,7 @@ class FirstThreadHandler extends ThreadHandler {
 				master.timeElapsed += 100 * memoryWidth
 				master.incrementFaultCount()
 				perThreadFault++
-				processorList.find{it.addPage(address)}
+				processorList[0].addPage(address)
 			}
 		master.timeElapsed++
 	}
@@ -38,7 +40,7 @@ class FirstThreadHandler extends ThreadHandler {
 		Attributes attrs) {
 		
 		if (!noSpawns)
-			getProcessor()
+			myProcessor = getProcessor()
 		
 		switch (qName) {
 			
@@ -72,7 +74,19 @@ class FirstThreadHandler extends ThreadHandler {
 			//start a new thread
 			noSpawns = false
 			def nextThread = attrs.getValue('thread')
-			master.handleThread(nextThread, processorList)
+			def addedThread = Thread.start {
+				def threadNo = Integer.parseInt(nextThread, 16)
+				def threadHandler =
+					new ThreadHandler(processorList, threadNo, master)
+				def threadIn =
+					SAXParserFactory.newInstance().newSAXParser().XMLReader
+				threadIn.setContentHandler(threadHandler)
+				master.handlers << threadHandler
+				threadIn.parse(
+					new InputSource(new FileInputStream(master.threadMap[nextThread]))
+					)
+				}
+			addedThread.join()
 			println "Have spawned thread ${nextThread} after ${master.timeElapsed} ticks"
 			break
 		}
