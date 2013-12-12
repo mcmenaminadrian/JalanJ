@@ -2,7 +2,12 @@
 package jalanJ
 
 import org.xml.sax.Attributes;
+
+import javax.xml.parsers.SAXParserFactory
+
+import org.xml.sax.*
 import org.xml.sax.helpers.DefaultHandler
+
 import java.util.concurrent.Semaphore
 
 /**
@@ -114,6 +119,24 @@ class ThreadHandler extends DefaultHandler {
 		return oldInstructionCount
 	}
 	
+	void spawnThread(def nextThreadName)
+	{
+		def addedThread = Thread.start {
+			def threadNo = Integer.parseInt(nextThreadName, 16)
+			def threadHandler =
+				new ThreadHandler(processorList, threadNo, master)
+			def threadIn =
+				SAXParserFactory.newInstance().newSAXParser().XMLReader
+			threadIn.setContentHandler(threadHandler)
+			master.handlers << threadHandler
+			threadIn.parse(
+				new InputSource(
+					new FileInputStream(master.threadMap[nextThreadName]))
+				)
+			}
+		threads << addedThread
+	}
+	
 	void startElement(String ns, String localName, String qName,
 		Attributes attrs) {
 		
@@ -142,7 +165,7 @@ class ThreadHandler extends DefaultHandler {
 			case 'spawn':
 			//start a new thread
 			def nextThread = attrs.getValue('thread')
-			master.handleThread(nextThread, processorList)
+			spawnThread(nextThread)
 			println "Have spawned thread ${nextThread} after ${master.timeElapsed} ticks"
 			break
 		}
@@ -155,6 +178,7 @@ class ThreadHandler extends DefaultHandler {
 		master.activeThreads--
 		processorList[myProcessor].deassignThread()
 		myProcessor = -1
+		threads.each it.join()
 	}
 	
 }

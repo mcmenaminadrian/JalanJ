@@ -66,20 +66,6 @@ class ExecutionTimer {
 				it.waitOne.release(1)
 		}
 	}
-
-	//synchronized def handleThread(def threadStr, def procs){
-//		Thread.start {
-	//	def threadNo = Integer.parseInt(threadStr, 16)
-		//def threadHandler = new ThreadHandler(procs, threadNo, this)
-		//def threadIn =
-			//SAXParserFactory.newInstance().newSAXParser().XMLReader
-		//threadIn.setContentHandler(threadHandler)
-		//handlers << threadHandler
-		//threadIn.parse(
-			//new InputSource(new FileInputStream(threadMap[threadStr]))
-			//)
-		//}
-	//}
 	
 	synchronized def handleFirstThread(def threadStr, def procs){
 		Thread.start {

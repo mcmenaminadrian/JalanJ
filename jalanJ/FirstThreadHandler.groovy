@@ -74,19 +74,7 @@ class FirstThreadHandler extends ThreadHandler {
 			//start a new thread
 			noSpawns = false
 			def nextThread = attrs.getValue('thread')
-			def addedThread = Thread.start {
-				def threadNo = Integer.parseInt(nextThread, 16)
-				def threadHandler =
-					new ThreadHandler(processorList, threadNo, master)
-				def threadIn =
-					SAXParserFactory.newInstance().newSAXParser().XMLReader
-				threadIn.setContentHandler(threadHandler)
-				master.handlers << threadHandler
-				threadIn.parse(
-					new InputSource(new FileInputStream(master.threadMap[nextThread]))
-					)
-				}
-			addedThread.join()
+			spawnThread(nextThread)
 			println "Have spawned thread ${nextThread} after ${master.timeElapsed} ticks"
 			break
 		}
