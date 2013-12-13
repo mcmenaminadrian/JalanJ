@@ -178,7 +178,7 @@ class ThreadHandler extends DefaultHandler {
 		master.activeThreads--
 		processorList[myProcessor].deassignThread()
 		myProcessor = -1
-		threads.each it.join()
+		threads.each{it.join()}
 	}
 	
 }
