@@ -99,7 +99,7 @@ class ThreadHandler extends DefaultHandler {
 		if (!havePage) {
 			master.incrementFaultCount()
 			perThreadFault++ 
-			processorList.find{ it.addPage(address)}
+			processorList[0].addPage(address)
 		}
 		getProcessor()
 		waitForTick()
