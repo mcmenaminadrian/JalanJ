@@ -39,7 +39,7 @@ class ThreadHandler extends DefaultHandler {
 		memoryWidth = processors[0].PAGESIZE/16
 		perThreadFault = 0
 		tickOn = 0
-		master.activeThreads++
+		master.addActiveThread()
 		instructionCount = 0
 	}
 	
@@ -85,7 +85,7 @@ class ThreadHandler extends DefaultHandler {
 		while (countDown > 0) {
 			if (!processorList[0].gotPage(address)) {
 				waitState = true
-				if (myProcessor > 0) {
+				if (myProcessor >= 0 ) {
 					processorList[myProcessor].deassignThread()
 					myProcessor = -1
 				}
@@ -175,7 +175,7 @@ class ThreadHandler extends DefaultHandler {
 	void endDocument()
 	{
 		println "Thread $threadNumber finished at tick ${master.timeElapsed}"
-		master.activeThreads--
+		master.removeActiveThread()
 		processorList[myProcessor].deassignThread()
 		myProcessor = -1
 		threads.each{it.join()}

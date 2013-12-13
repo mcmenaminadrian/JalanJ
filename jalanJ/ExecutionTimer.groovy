@@ -3,8 +3,11 @@
  */
 package jalanJ
 
+
 import org.xml.sax.Attributes
+
 import javax.xml.parsers.SAXParserFactory
+
 import org.xml.sax.*
 
 /**
@@ -24,7 +27,7 @@ class ExecutionTimer {
 	def threadMap = [:]
 	def PROCESSORS = 16
 	def firstThread
-	def activeThreads
+	volatile int activeThreads
 	def signalledThreads
 	def guiOutput
 	def guiWindow
@@ -58,6 +61,16 @@ class ExecutionTimer {
 		firstThread = number
 	}
 	
+	synchronized void addActiveThread()
+	{
+		activeThreads++
+	}
+	
+	synchronized void removeActiveThread() 
+	{
+		activeThreads--
+	}
+	
 	synchronized void tickOver()
 	{
 		timeElapsed += synchCount
@@ -83,7 +96,7 @@ class ExecutionTimer {
 	
 	synchronized void signalTick()
 	{
-		if (++signalledThreads == activeThreads) {
+		if (++signalledThreads >= activeThreads) {
 			signalledThreads = 0
 			tickOver()
 		}
