@@ -105,11 +105,8 @@ class ExecutionTimer {
 	void beginExecution()
 	{
 		signalledThreads = 0
-		//this is the first thread, so we just allocate a processor
-		processors[0].activeThread = firstThread.toInteger()
 		handleFirstThread(firstThread, processors)	
 	}
-	
 	
 	synchronized void incrementFaultCount()
 	{
