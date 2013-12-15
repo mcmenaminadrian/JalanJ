@@ -179,7 +179,8 @@ class ThreadHandler extends DefaultHandler {
 		processorList[myProcessor].deassignThread()
 		myProcessor = -1
 		//ensure nobody waits on us now we are in exit mode
-		waitOne.release(1)
+		if (waitOne)
+			waitOne.release(1)
 		threads.each{it.join()}
 	}
 	

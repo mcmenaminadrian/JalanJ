@@ -18,14 +18,18 @@ class MappingHandler extends DefaultHandler {
 	def threadList = []
 	def currentThread
 	def groupingName
+	def gui
+	def memModel
 
-	MappingHandler(def baseName)
+	MappingHandler(def baseName, def guiUse, def memoryModel )
 	{
 		super()
 		threadCount = 0
 		threadBitMap = 0L
 		currentThread = new PosixThreadTID(0)
 		groupingName = baseName
+		gui = guiUse
+		memModel = memoryModel
 	}
 	
 	void startElement(String ns, String localName, String qName,
@@ -115,7 +119,8 @@ class MappingHandler extends DefaultHandler {
 		writer.write("</threadrecordml>\n")
 		writer.close()
 		
-		def executioner = new ExecutionTimer("${groupingName}_control.xml")
+		def executioner = new ExecutionTimer("${groupingName}_control.xml",
+			gui, memModel)
 	}
 	
 }

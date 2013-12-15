@@ -28,7 +28,7 @@ class JalanParse {
 		if (execute) {
 			println "Timing execution"
 			if (!control) { 
-				def threadMapper = new MappingHandler(baseName)
+				def threadMapper = new MappingHandler(baseName, gui, memModel)
 				def mapIn =
 					SAXParserFactory.newInstance().newSAXParser().XMLReader
 				mapIn.setContentHandler(threadMapper)
