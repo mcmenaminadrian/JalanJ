@@ -3,11 +3,8 @@
  */
 package jalanJ
 
-
 import org.xml.sax.Attributes
-
 import javax.xml.parsers.SAXParserFactory
-
 import org.xml.sax.*
 
 /**
@@ -33,6 +30,7 @@ class ExecutionTimer {
 	def guiWindow
 	def faultCount
 	def synchCount = 10
+	def latchKey
 	
 	ExecutionTimer(def fileStr, def gui, def memModel)
 	{
@@ -81,7 +79,7 @@ class ExecutionTimer {
 	}
 	
 	synchronized def handleFirstThread(def threadStr, def procs){
-		Thread.start {
+		def firstThread = Thread.start {
 		def threadNo = Integer.parseInt(threadStr, 16)
 		def threadHandler = new FirstThreadHandler(procs, threadNo, this)
 		def threadIn =

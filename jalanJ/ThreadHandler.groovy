@@ -175,13 +175,13 @@ class ThreadHandler extends DefaultHandler {
 	void endDocument()
 	{
 		println "Thread $threadNumber finished at tick ${master.timeElapsed}"
+		//ensure nobody waiting for us
+		master.signalTick()
 		master.removeActiveThread()
 		processorList[myProcessor].deassignThread()
 		myProcessor = -1
-		//ensure nobody waits on us now we are in exit mode
-		if (waitOne)
-			waitOne.release(1)
 		threads.each{it.join()}
+		println "Now exiting from $threadNumber handler at tick ${master.timeElapsed}"
 	}
 	
 }
