@@ -176,11 +176,9 @@ class ThreadHandler extends DefaultHandler {
 	{
 		println "Thread $threadNumber finished at tick ${master.timeElapsed}"
 		//ensure nobody waiting for us
-		master.signalTick()
-		master.removeActiveThread()
+		master.closeoutThread()
 		processorList[myProcessor].deassignThread()
 		myProcessor = -1
-		threads.each{it.join()}
 		println "Now exiting from $threadNumber handler at tick ${master.timeElapsed}"
 	}
 	

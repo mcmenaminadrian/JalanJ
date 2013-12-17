@@ -78,6 +78,12 @@ class ExecutionTimer {
 		}
 	}
 	
+	synchronized void closeoutThread()
+	{
+		signalTick()
+		removeActiveThread()
+	}
+	
 	synchronized def handleFirstThread(def threadStr, def procs){
 		def firstThread = Thread.start {
 		def threadNo = Integer.parseInt(threadStr, 16)
