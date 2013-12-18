@@ -122,7 +122,7 @@ class ThreadHandler extends DefaultHandler {
 	void spawnThread(def nextThreadName)
 	{
 		def addedThread = Thread.start {
-			def threadNo = Integer.parseInt(nextThreadName, 16)
+			def threadNo = Integer.parseInt(nextThreadName, 10)
 			def threadHandler =
 				new ThreadHandler(processorList, threadNo, master)
 			def threadIn =
