@@ -36,7 +36,7 @@ class SimpleLRUAllocator implements PagingAllocator {
 	@Override
 	public boolean allocatePage(long address) {
 		LRUQueue[address >> PAGESHIFT] = new Date()
-		if (LRUQueue.size() > memorySize)
+		if (LRUQueue.size() > memorySize >> PAGESHIFT)
 			LRUQueue.minus(LRUQueue.min{it.value})
 		return true;
 	}
