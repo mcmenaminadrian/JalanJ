@@ -32,14 +32,15 @@ class ExecutionTimer {
 	def synchCount = 10
 	def latchKey
 	
-	ExecutionTimer(def fileStr, def gui, def memModel)
+	ExecutionTimer(def fileStr, def gui, def memModel, def maxSize,
+		def pageOffset)
 	{
 		guiOutput = gui
 		controlFile = fileStr
 		timeElapsed = 0
 		for (i in 1 .. PROCESSORS)
 		{
-			processors << new ProcessorState(memModel)
+			processors << new ProcessorState(memModel, pageOffset, maxSize)
 		}
 		if (gui) {
 			guiWindow = new GuiWindow(this)

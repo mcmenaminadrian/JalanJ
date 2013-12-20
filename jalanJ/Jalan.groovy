@@ -15,7 +15,7 @@ import org.xml.sax.*
 class JalanParse {
 	
 	JalanParse(def threads, def execute, def baseName, def control, def gui,
-		def memModel, def fileName)
+		def memModel, def pageOffset, def maxSize, def fileName)
 	{
 		if (threads) {
 			println "Counting threads in $fileName"
@@ -35,7 +35,11 @@ class JalanParse {
 				mapIn.parse(new InputSource(new FileInputStream(fileName)))
 			} else {
 				println "Using control file ${fileName}"
-				def executioner = new ExecutionTimer(fileName, gui, memModel)
+				println "Memory model: $memModel"
+				println "Page size (bytes): ${1 << pageOffset}"
+				println "Per processor memory (kB): $maxSize"
+				def executioner = new ExecutionTimer(fileName, gui, memModel,
+					maxSize, pageOffset)
 			}
 		}
 	}
@@ -53,8 +57,21 @@ cliJalan.c(longOpt: 'control', 'Use control file (supercedes \'b\' option)')
 cliJalan.g(longOpt: 'gui', "Display GUI output (default is text only)")
 cliJalan.m(longOpt: 'memorymodel', args:1, argName:'type', optionalArg:false,
 	'Memory allocation model: q for queue (default), l for LRU')
+cliJalan.p(longOpt: 'pageoffset', args:1, argName:'bits', optionalArg:false,
+	'Bit offset for page size (default is 12 - 4k page)')
+cliJalan.z(longOpt: 'perprocessormem', args:1, argName:'mx', optionalArg:false,
+	'Maximum (kB) local memory per processor (default is 32)')
 
 def jArgs = cliJalan.parse(args)
+def pageOffset = 12
+def maxSize = 32
+
+if (jArgs.p) {
+	pageOffset = jArgs.p as Integer
+}
+if (jArgs.z) {
+	maxSize = jArgs.z as Integer
+}
 
 if (jArgs.u || args.size()==0) {
 	cliJalan.usage()
@@ -90,6 +107,6 @@ if (jArgs.u || args.size()==0) {
 	}
 	
 	new JalanParse(threads, execute, basename, control, gui, memModel,
-		args[args.size() - 1])
+		pageOffset, maxSize, args[args.size() - 1])
 	
 }

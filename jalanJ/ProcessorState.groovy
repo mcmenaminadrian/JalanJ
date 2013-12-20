@@ -13,13 +13,16 @@ class ProcessorState {
 	def activeThread
 	def startProcessor
 	static def localMemory
-	def MAXSIZE = 32 * 1024
-	def PAGESHIFT = 12
-	def PAGESIZE = 1 << PAGESHIFT
+	def MAXSIZE
+	def PAGESHIFT
+	def PAGESIZE
 	
-	ProcessorState(def memoryModel) {
+	ProcessorState(def memoryModel, def pageOffset, def maxSize) {
 		waitState = false
 		activeThread = -1
+		PAGESHIFT = pageOffset
+		PAGESIZE = 1 << PAGESHIFT
+		MAXSIZE = maxSize * 1024
 		if (!localMemory) {
 			if (memoryModel == "q")
 				localMemory = new QueueAllocator(PAGESHIFT, MAXSIZE * 16)
