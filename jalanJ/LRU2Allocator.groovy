@@ -59,7 +59,6 @@ class LRU2Allocator implements PagingAllocator {
 		if (lowPriority[page]) {
 			reallocatePage(page)
 		} else if (highPriority[page]) {
-			println "have ${highPriority.size()} pages now"
 			highPriority[page] = new Date()
 			return true
 		} else
