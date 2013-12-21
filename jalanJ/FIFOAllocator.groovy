@@ -7,14 +7,14 @@ package jalanJ
  * @author adrian
  * Crude stack based memory allocator
  */
-class QueueAllocator implements PagingAllocator {
+class FIFOAllocator implements PagingAllocator {
 
 	def topOfStack
 	def memorySize
 	def PAGESHIFT
-	def memoryStack = [] as Queue
+	def memoryStack = [:]
 	
-	QueueAllocator(def pageOff, def memSize)
+	FIFOAllocator(def pageOff, def memSize)
 	{
 		setPageOffset(pageOff)
 		setMaxMemory(memSize)
@@ -28,12 +28,10 @@ class QueueAllocator implements PagingAllocator {
 	public boolean havePage(long address) {
 		if (topOfStack < 0)
 			return false
-		long pageNumber = address >> PAGESHIFT
-		for (i in 0 .. topOfStack) {
-			if (pageNumber == memoryStack[i])
-				return true
-		}
-		return false;
+		if (memoryStack[address >> PAGESHIFT])
+			return true
+		else
+			return false
 	}
 
 	/* (non-Javadoc)
@@ -43,12 +41,12 @@ class QueueAllocator implements PagingAllocator {
 	synchronized public boolean allocatePage(long address) {
 		if (havePage(address))
 			return true
-		if (topOfStack + 1 >= memorySize >> PAGESHIFT) {
-			memoryStack.poll()
-			topOfStack--
+		topOfStack++
+		memoryStack[address >> PAGESHIFT] = topOfStack
+		if (memoryStack.size() > memorySize >> PAGESHIFT)
+		{
+			memoryStack.remove(memoryStack.min{it.value})
 		}
-		Long pageNumber = address >> PAGESHIFT
-		memoryStack[++topOfStack] = pageNumber
 		return true
 	}
 
