@@ -56,7 +56,7 @@ cliJalan.b(longOpt: 'basename', args:1, argName:'filename',
 cliJalan.c(longOpt: 'control', 'Use control file (supercedes \'b\' option)')
 cliJalan.g(longOpt: 'gui', "Display GUI output (default is text only)")
 cliJalan.m(longOpt: 'memorymodel', args:1, argName:'type', optionalArg:false,
-	'Memory allocation model: q for queue (default), l for LRU')
+	'Memory allocation model: q for FIFO (default), l for LRU, k for LRU/2')
 cliJalan.p(longOpt: 'pageoffset', args:1, argName:'bits', optionalArg:false,
 	'Bit offset for page size (default is 12 - 4k page)')
 cliJalan.z(longOpt: 'perprocessormem', args:1, argName:'mx', optionalArg:false,

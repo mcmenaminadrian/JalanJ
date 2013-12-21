@@ -29,9 +29,13 @@ class LRU2Allocator implements PagingAllocator {
 	 */
 	@Override
 	public boolean havePage(long address) {
-		if (lowPriority[address >> PAGESHIFT] ||
-			highPriority[address >> PAGESHIFT])
+		if (lowPriority[address >> PAGESHIFT]) {
+			allocatePage(address >> PAGESHIFT)
 			return true
+		} else if (highPriority[address >> PAGESHIFT]) {
+			highPriority[address >> PAGESHIFT] = new Date()
+			return true
+		}
 		else return false
 	}
 
@@ -42,9 +46,8 @@ class LRU2Allocator implements PagingAllocator {
 		if (highPriority.size() > highSize)
 		{
 			def oldPage = highPriority.min{it.value}
-			def oldDate = highPriority.remove(oldPage)
+			def oldDate = highPriority.remove(oldPage.key)
 			lowPriority[oldPage] = oldDate
-			println "pushed down $oldPage with $oldDate"
 		}
 	}
 	/* (non-Javadoc)
@@ -56,12 +59,13 @@ class LRU2Allocator implements PagingAllocator {
 		if (lowPriority[page]) {
 			reallocatePage(page)
 		} else if (highPriority[page]) {
+			println "have ${highPriority.size()} pages now"
 			highPriority[page] = new Date()
 			return true
 		} else
 			lowPriority[page] = new Date()
-		if (lowPriorty.size() > lowSize) {
-			lowPriority.remove(lowPriority.min{it.value})
+		if (lowPriority.size() > lowSize) {
+			lowPriority.remove((lowPriority.min{it.value}).key)
 		}
 		return true;
 	}
@@ -84,6 +88,7 @@ class LRU2Allocator implements PagingAllocator {
 		totalPages = bytes/(1 << PAGESHIFT)
 		highSize = (totalPages * 0.25) as Integer
 		lowSize = totalPages - highSize
+		println "Total pages: $totalPages High pages: $highSize  Low pages: $lowSize"
 	}
 
 }

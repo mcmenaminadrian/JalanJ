@@ -25,8 +25,10 @@ class SimpleLRUAllocator implements PagingAllocator {
 	 */
 	@Override
 	public boolean havePage(long address) {
-		if (LRUQueue[address >> PAGESHIFT])
+		if (LRUQueue[address >> PAGESHIFT]) {
+			LRUQueue[address >> PAGESHIFT] = new Date()
 			return true
+		}
 		return false;
 	}
 

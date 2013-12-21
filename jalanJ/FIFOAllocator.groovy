@@ -45,7 +45,7 @@ class FIFOAllocator implements PagingAllocator {
 		memoryStack[address >> PAGESHIFT] = topOfStack
 		if (memoryStack.size() > memorySize >> PAGESHIFT)
 		{
-			memoryStack.remove(memoryStack.min{it.value})
+			memoryStack.remove(memoryStack.min{it.value}.key)
 		}
 		return true
 	}

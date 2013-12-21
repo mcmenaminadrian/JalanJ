@@ -25,9 +25,11 @@ class ProcessorState {
 		MAXSIZE = maxSize * 1024
 		if (!localMemory) {
 			if (memoryModel == "q")
-				localMemory = new QueueAllocator(PAGESHIFT, MAXSIZE * 16)
+				localMemory = new FIFOAllocator(PAGESHIFT, MAXSIZE * 16)
 			else if (memoryModel == "l")
 				localMemory = new SimpleLRUAllocator(PAGESHIFT, MAXSIZE * 16)
+			else if (memoryModel == "k")
+				localMemory = new LRU2Allocator(PAGESHIFT, MAXSIZE * 16)
 		}
 	}
 	
