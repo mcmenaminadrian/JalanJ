@@ -29,14 +29,11 @@ class LRU2Allocator implements PagingAllocator {
 	 */
 	@Override
 	public boolean havePage(long address) {
-		if (lowPriority[address >> PAGESHIFT]) {
-			allocatePage(address >> PAGESHIFT)
-			return true
-		} else if (highPriority[address >> PAGESHIFT]) {
-			highPriority[address >> PAGESHIFT] = new Date()
-			return true
+		if (lowPriority[address >> PAGESHIFT] ||
+			highPriority[address >> PAGESHIFT]) {
+			return allocatePage(address)
 		}
-		else return false
+		return false
 	}
 
 	void reallocatePage(def page)
@@ -61,8 +58,9 @@ class LRU2Allocator implements PagingAllocator {
 		} else if (highPriority[page]) {
 			highPriority[page] = new Date()
 			return true
-		} else
+		} else {
 			lowPriority[page] = new Date()
+		}
 		if (lowPriority.size() > lowSize) {
 			lowPriority.remove((lowPriority.min{it.value}).key)
 		}
