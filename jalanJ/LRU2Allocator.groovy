@@ -28,7 +28,7 @@ class LRU2Allocator implements PagingAllocator {
 	 * @see jalanJ.PagingAllocator#havePage(long)
 	 */
 	@Override
-	public boolean havePage(long address) {
+	synchronized public boolean havePage(long address) {
 		if (lowPriority[address >> PAGESHIFT] ||
 			highPriority[address >> PAGESHIFT]) {
 			return allocatePage(address)
@@ -55,12 +55,12 @@ class LRU2Allocator implements PagingAllocator {
 		def page = address >> PAGESHIFT
 		if (lowPriority[page]) {
 			reallocatePage(page)
+			return true
 		} else if (highPriority[page]) {
 			highPriority[page] = new Date()
 			return true
-		} else {
-			lowPriority[page] = new Date()
 		}
+		lowPriority[page] = new Date()
 		if (lowPriority.size() > lowSize) {
 			lowPriority.remove((lowPriority.min{it.value}).key)
 		}
@@ -81,9 +81,9 @@ class LRU2Allocator implements PagingAllocator {
 	@Override
 	public void setMaxMemory(long bytes) {
 		memorySize = bytes
-		//low takes 75%, high 25%
+		//low takes 5%, high 95%
 		totalPages = bytes/(1 << PAGESHIFT)
-		highSize = (totalPages * 0.25) as Integer
+		highSize = (totalPages * 0.95) as Integer
 		lowSize = totalPages - highSize
 		println "Total pages: $totalPages High pages: $highSize  Low pages: $lowSize"
 	}
