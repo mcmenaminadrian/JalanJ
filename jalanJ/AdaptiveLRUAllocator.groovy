@@ -100,9 +100,9 @@ class AdaptiveLRUAllocator implements PagingAllocator {
 	@Override
 	public void setMaxMemory(long bytes) {
 			memorySize = bytes
-		//low guide is 60%, high 40%
+		//low guide is 30%, high 70%
 		totalPages = bytes/(1 << PAGESHIFT)
-		highSize = (totalPages * 0.71) as Integer
+		highSize = (totalPages * 0.7) as Integer
 		lowSize = totalPages - highSize
 		println (
 		"Total pages: $totalPages High pages: $highSize  Low pages: $lowSize"
