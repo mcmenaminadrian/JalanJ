@@ -66,7 +66,8 @@ class AdaptiveLRUAllocator implements PagingAllocator {
 	
 	void flushLow()
 	{
-		lowPriority.remove(lowPriority.min{it.value}.key)
+		def toGo = lowPriority.min{it.value}
+		lowPriority.remove(toGo.key)
 	}
 
 	/* (non-Javadoc)
@@ -76,9 +77,9 @@ class AdaptiveLRUAllocator implements PagingAllocator {
 	synchronized public boolean allocatePage(long address) {
 		rotateHigh()
 		if (highPriority.size() > highSize) {
-			flushHigh(highSize - highPriority.size())
+			flushHigh(highPriority.size() - highSize)
 		}
-		if (lowPriority.size() + highSize >= totalPages) {
+		if (lowPriority.size() + highPriority.size() >= totalPages) {
 			flushLow()
 		}
 		lowPriority[address >> PAGESHIFT] = new Date()
@@ -99,9 +100,9 @@ class AdaptiveLRUAllocator implements PagingAllocator {
 	@Override
 	public void setMaxMemory(long bytes) {
 			memorySize = bytes
-		//low guide is 33%, high 67%
+		//low guide is 60%, high 40%
 		totalPages = bytes/(1 << PAGESHIFT)
-		highSize = (totalPages * 0.4) as Integer
+		highSize = (totalPages * 0.71) as Integer
 		lowSize = totalPages - highSize
 		println (
 		"Total pages: $totalPages High pages: $highSize  Low pages: $lowSize"
