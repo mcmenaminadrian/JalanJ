@@ -14,7 +14,6 @@ class LRU2Allocator implements PagingAllocator {
 	def memorySize
 	def highSize
 	def lowSize
-	def totalPages
 	def PAGESHIFT
 	
 	
@@ -82,10 +81,11 @@ class LRU2Allocator implements PagingAllocator {
 	public void setMaxMemory(long bytes) {
 		memorySize = bytes
 		//low takes 5%, high 95%
-		totalPages = bytes/(1 << PAGESHIFT)
+		def totalPages = bytes/(1 << PAGESHIFT)
 		highSize = (totalPages * 0.95) as Integer
 		lowSize = totalPages - highSize
-		println "Total pages: $totalPages High pages: $highSize  Low pages: $lowSize"
+		println (
+		"Total pages: $totalPages High pages: $highSize  Low pages: $lowSize")
 	}
 
 }

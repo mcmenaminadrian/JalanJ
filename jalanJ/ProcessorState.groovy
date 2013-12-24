@@ -24,12 +24,20 @@ class ProcessorState {
 		PAGESIZE = 1 << PAGESHIFT
 		MAXSIZE = maxSize * 1024
 		if (!localMemory) {
-			if (memoryModel == "q")
+			switch (memoryModel) {
+				case "q":
 				localMemory = new FIFOAllocator(PAGESHIFT, MAXSIZE * 16)
-			else if (memoryModel == "l")
+				break
+				case "l":
 				localMemory = new SimpleLRUAllocator(PAGESHIFT, MAXSIZE * 16)
-			else if (memoryModel == "k")
+				break
+				case "k":
 				localMemory = new LRU2Allocator(PAGESHIFT, MAXSIZE * 16)
+				break
+				case "a":
+				localMemory = new AdaptiveLRUAllocator(PAGESHIFT, MAXSIZE * 16)
+				break
+			}
 		}
 	}
 	
