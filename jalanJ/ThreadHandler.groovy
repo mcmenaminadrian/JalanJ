@@ -179,7 +179,7 @@ class ThreadHandler extends DefaultHandler {
 		master.closeoutThread()
 		processorList[myProcessor].deassignThread()
 		myProcessor = -1
-		println "Now exiting from $threadNumber handler at tick ${master.timeElapsed}"
+		waitOne = null
 	}
 	
 }
