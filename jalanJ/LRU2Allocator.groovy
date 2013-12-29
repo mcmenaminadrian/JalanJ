@@ -27,7 +27,7 @@ class LRU2Allocator implements PagingAllocator {
 	 * @see jalanJ.PagingAllocator#havePage(long)
 	 */
 	@Override
-	synchronized public boolean havePage(long address) {
+	synchronized public boolean havePage(long address, def debug=null) {
 		if (lowPriority[address >> PAGESHIFT] ||
 			highPriority[address >> PAGESHIFT]) {
 			return allocatePage(address)
@@ -50,7 +50,7 @@ class LRU2Allocator implements PagingAllocator {
 	 * @see jalanJ.PagingAllocator#allocatePage(long)
 	 */
 	@Override
-	synchronized public boolean allocatePage(long address) {
+	synchronized public boolean allocatePage(long address, def debug=null) {
 		def page = address >> PAGESHIFT
 		if (lowPriority[page]) {
 			reallocatePage(page)

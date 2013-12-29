@@ -40,7 +40,8 @@ class ExecutionTimer {
 		timeElapsed = 0
 		for (i in 1 .. PROCESSORS)
 		{
-			processors << new ProcessorState(memModel, pageOffset, maxSize)
+			processors << new ProcessorState(memModel, pageOffset, maxSize,
+				this)
 		}
 		if (gui) {
 			guiWindow = new GuiWindow(this)

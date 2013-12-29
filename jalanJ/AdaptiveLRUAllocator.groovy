@@ -16,6 +16,7 @@ class AdaptiveLRUAllocator implements PagingAllocator {
 	def memorySize
 	def lowPriority = [:]
 	def highPriority = [:]
+	def TICKLIMIT = 1000000
 	
 	
 	AdaptiveLRUAllocator(def pageOff, def memSize)
@@ -28,26 +29,27 @@ class AdaptiveLRUAllocator implements PagingAllocator {
 	 * @see jalanJ.PagingAllocator#havePage(long)
 	 */
 	@Override
-	synchronized public boolean havePage(long address) {
+	synchronized public boolean havePage(long address, def debug) {
 		def page = address >> PAGESHIFT
 		if (lowPriority[page]) {
 			lowPriority.remove(page)
-			highPriority[page] = new Date()
+			highPriority[page] = debug
 			return true
 		} else if (highPriority[page]) {
-			highPriority[page] = new Date()
+			highPriority[page] = debug
 			return true
 		}
 		return false;
 	}
 	
-	// anything older than a second gets pushed to low queue
-	void rotateHigh()
+	// anything older than certain number of ticks gets pushed down
+	void rotateHigh(def ticks)
 	{
+		if (ticks < TICKLIMIT)
+			return
 		def removals = [:]
 		highPriority.each{key, value ->
-			def now = (new Date().toTimestamp()).getTime()
-			if (now - (value.toTimestamp()).getTime() > 999) {
+			if (ticks - value > TICKLIMIT) {
 				removals[key] = value
 				lowPriority[key] = value
 			}
@@ -74,15 +76,15 @@ class AdaptiveLRUAllocator implements PagingAllocator {
 	 * @see jalanJ.PagingAllocator#allocatePage(long)
 	 */
 	@Override
-	synchronized public boolean allocatePage(long address) {
-		rotateHigh()
+	synchronized public boolean allocatePage(long address, def debug) {
+		rotateHigh(debug)
 		if (highPriority.size() > highSize) {
 			flushHigh(highPriority.size() - highSize)
 		}
 		if (lowPriority.size() + highPriority.size() >= totalPages) {
 			flushLow()
 		}
-		lowPriority[address >> PAGESHIFT] = new Date()
+		lowPriority[address >> PAGESHIFT] = debug
 		return true;
 	}
 

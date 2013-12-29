@@ -25,7 +25,7 @@ class FIFOAllocator implements PagingAllocator {
 	 * @see jalanJ.PagingAllocator#havePage(long)
 	 */
 	@Override
-	public boolean havePage(long address) {
+	public boolean havePage(long address, def debug=null) {
 		if (topOfStack < 0)
 			return false
 		if (memoryStack[address >> PAGESHIFT])
@@ -38,7 +38,7 @@ class FIFOAllocator implements PagingAllocator {
 	 * @see jalanJ.PagingAllocator#allocatePage(long)
 	 */
 	@Override
-	synchronized public boolean allocatePage(long address) {
+	synchronized public boolean allocatePage(long address, def debug=null) {
 		if (havePage(address))
 			return true
 		topOfStack++

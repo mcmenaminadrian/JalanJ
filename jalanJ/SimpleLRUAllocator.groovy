@@ -24,7 +24,7 @@ class SimpleLRUAllocator implements PagingAllocator {
 	 * @see jalanJ.PagingAllocator#havePage(long)
 	 */
 	@Override
-	public boolean havePage(long address) {
+	public boolean havePage(long address, def debug=null) {
 		if (LRUQueue[address >> PAGESHIFT]) {
 			LRUQueue[address >> PAGESHIFT] = new Date()
 			return true
@@ -36,7 +36,7 @@ class SimpleLRUAllocator implements PagingAllocator {
 	 * @see jalanJ.PagingAllocator#allocatePage(long)
 	 */
 	@Override
-	public boolean allocatePage(long address) {
+	public boolean allocatePage(long address, def debug=null) {
 		LRUQueue[address >> PAGESHIFT] = new Date()
 		if (LRUQueue.size() > memorySize >> PAGESHIFT)
 			LRUQueue.remove(LRUQueue.min{it.value}.key)

@@ -16,8 +16,10 @@ class ProcessorState {
 	def MAXSIZE
 	def PAGESHIFT
 	def PAGESIZE
+	def exeTimer
 	
-	ProcessorState(def memoryModel, def pageOffset, def maxSize) {
+	ProcessorState(def memoryModel, def pageOffset, def maxSize, def master) {
+		exeTimer = master
 		waitState = false
 		activeThread = -1
 		PAGESHIFT = pageOffset
@@ -48,12 +50,12 @@ class ProcessorState {
 	
 	synchronized def gotPage(long address)
 	{
-		return localMemory.havePage(address)
+		return localMemory.havePage(address, exeTimer.timeElapsed)
 	}
 	
 	synchronized def addPage(long address)
 	{
-		return localMemory.allocatePage(address)
+		return localMemory.allocatePage(address, exeTimer.timeElapsed)
 	}
 	
 	def matchThread(def threadNo)
