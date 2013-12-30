@@ -16,7 +16,7 @@ class AdaptiveLRUAllocator implements PagingAllocator {
 	def memorySize
 	def lowPriority = [:]
 	def highPriority = [:]
-	def TICKLIMIT = 1000000
+	def TICKLIMIT = 51201
 	
 	
 	AdaptiveLRUAllocator(def pageOff, def memSize)
@@ -60,8 +60,8 @@ class AdaptiveLRUAllocator implements PagingAllocator {
 	//have to push away more 
 	void flushHigh(def num)
 	{
-		highPriority.sort{it.value}
-		def removals = highPriority.take(num)
+		def sortedPriority = highPriority.sort{a, b -> a.value <=> b.value}
+		def removals = sortedPriority.take(num)
 		highPriority = highPriority - removals
 		lowPriority = lowPriority + removals
 	}
@@ -78,10 +78,12 @@ class AdaptiveLRUAllocator implements PagingAllocator {
 	@Override
 	synchronized public boolean allocatePage(long address, def debug) {
 		rotateHigh(debug)
-		if (highPriority.size() > highSize) {
-			flushHigh(highPriority.size() - highSize)
+		if (lowPriority.size() == 0) {
+			if (highPriority.size() > highSize) {
+				flushHigh(highPriority.size() - highSize)
+			}
 		}
-		if (lowPriority.size() + highPriority.size() >= totalPages) {
+		if (lowPriority.size() + highPriority.size() == totalPages) {
 			flushLow()
 		}
 		lowPriority[address >> PAGESHIFT] = debug
