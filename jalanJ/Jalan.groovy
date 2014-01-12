@@ -46,7 +46,7 @@ class JalanParse {
 }
 
 def memAllocStr = "Memory allocation model: q for FIFO (default),"
-memAllocStr += " l for LRU, k for LRU/2, a for apative LRU"
+memAllocStr += " l for LRU, k for LRU/2, a for apative LRU, w for Working set"
 
 def cliJalan = new CliBuilder
 	(usage: 'Jalan [options] XMLFile\nJalan [options]c ControlFile')

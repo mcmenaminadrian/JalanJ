@@ -39,6 +39,9 @@ class ProcessorState {
 				case "a":
 				localMemory = new AdaptiveLRUAllocator(PAGESHIFT, MAXSIZE * 16)
 				break
+				case "w":
+				localMemory = new WorkingsetAllocator(PAGESHIFT, MAXSIZE * 16)
+				break
 			}
 		}
 	}

@@ -16,7 +16,7 @@ class AdaptiveLRUAllocator implements PagingAllocator {
 	def memorySize
 	def lowPriority = [:]
 	def highPriority = [:]
-	def TICKLIMIT = 51201
+	def TICKLIMIT = 512000
 	
 	
 	AdaptiveLRUAllocator(def pageOff, def memSize)

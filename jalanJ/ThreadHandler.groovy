@@ -36,7 +36,7 @@ class ThreadHandler extends DefaultHandler {
 		master = callback
 		waitState = false
 		myProcessor = -1
-		memoryWidth = processors[0].PAGESIZE/16
+		memoryWidth = processors[0].PAGESIZE / 16
 		perThreadFault = 0
 		tickOn = 0
 		master.addActiveThread()
