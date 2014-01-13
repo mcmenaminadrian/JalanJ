@@ -15,23 +15,30 @@ class WorkingsetAllocator implements PagingAllocator {
 	def MAXSIZE
 	def memorySize
 	def pageSet = [:]
+	def oldTimeStamp = 0
 	
 	WorkingsetAllocator(def pageOff, def memSize)
 	{
 		setPageOffset(pageOff)
 		setMaxMemory(memSize)
 		//assume 16 processors of 32k here
-		MAXTICKS = 2048000
+		MAXTICKS = 327680
 	}
 	
-	void cleanPageSet(def timeStamp)
+	boolean cleanPageSet(def timeStamp)
 	{
+		if (oldTimeStamp == timeStamp)
+			return false
 		def outOfDatePages = [:]
 		pageSet.each { key, value ->
 			if (timeStamp - value > MAXTICKS)
 				outOfDatePages[key] = value
 		}
+		if (outOfDatePages.size() == 0)
+			return false
 		pageSet = pageSet - outOfDatePages
+		oldTimeStamp = timeStamp
+		return true
 	}
 
 	/* (non-Javadoc)
@@ -42,10 +49,8 @@ class WorkingsetAllocator implements PagingAllocator {
 		def page = address >> PAGESHIFT
 		if (pageSet[page]) {
 			pageSet[page] = debug
-			cleanPageSet(debug)
 			return true
 		}
-		cleanPageSet(debug)
 		return false;
 	}
 
@@ -54,9 +59,10 @@ class WorkingsetAllocator implements PagingAllocator {
 	 */
 	@Override
 	synchronized public boolean allocatePage(long address, def debug) {
-		cleanPageSet(debug)
-		if (pageSet.size() == MAXSIZE)
-			pageSet.remove((pageSet.min{it.value}).key)
+		if (pageSet.size() == MAXSIZE) {
+			if (!cleanPageSet(debug))
+				pageSet.remove((pageSet.min{it.value}).key)
+		}
 		pageSet[address >> PAGESHIFT] = debug
 		return true;
 	}
