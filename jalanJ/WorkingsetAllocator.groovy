@@ -22,7 +22,7 @@ class WorkingsetAllocator implements PagingAllocator {
 		setPageOffset(pageOff)
 		setMaxMemory(memSize)
 		//assume 16 processors of 32k here
-		MAXTICKS = 327680
+		MAXTICKS = 2048000
 	}
 	
 	boolean cleanPageSet(def timeStamp)

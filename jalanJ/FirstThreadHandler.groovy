@@ -50,10 +50,11 @@ class FirstThreadHandler extends ThreadHandler {
 			def address = Long.parseLong(attrs.getValue('address'), 16)
 			/* FIX ME: we assume for now that allocations are aligned */
 			/* FIX ME: do not account for processor locality yet */
-			if (noSpawns)
+			if (noSpawns) {
 				addressRead(address)
-			else
+			} else {
 				super.addressRead(address)
+			}
 			instructionCount++
 			break;
 			
@@ -77,6 +78,7 @@ class FirstThreadHandler extends ThreadHandler {
 			spawnThread(nextThread)
 			println "Have spawned thread ${nextThread} after ${master.timeElapsed} ticks"
 			break
+
 		}
 		
 	}
