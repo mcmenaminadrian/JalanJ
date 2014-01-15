@@ -42,6 +42,9 @@ class ProcessorState {
 				case "w":
 				localMemory = new WorkingsetAllocator(PAGESHIFT, MAXSIZE * 16)
 				break
+				case "3":
+				localMemory = new ThreeQAllocator(PAGESHIFT, MAXSIZE * 16)
+				break
 			}
 		}
 	}
