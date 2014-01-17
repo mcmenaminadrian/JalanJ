@@ -94,7 +94,7 @@ class ThreeQAllocator implements PagingAllocator {
 				else if (middlePriority.size())
 					middlePriority.remove((middlePriority.min{it.value}).key)
 				else
-					lowPriority.remove((lowPriority.min{it.value}).key)
+					lowPriority.remove(lowPriority.min{it.value})
 		}
 		lowPriority[address >> PAGESHIFT] = debug
 	}

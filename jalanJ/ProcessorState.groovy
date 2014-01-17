@@ -25,27 +25,14 @@ class ProcessorState {
 		PAGESHIFT = pageOffset
 		PAGESIZE = 1 << PAGESHIFT
 		MAXSIZE = maxSize * 1024
-		if (!localMemory) {
-			switch (memoryModel) {
-				case "q":
-				localMemory = new FIFOAllocator(PAGESHIFT, MAXSIZE * 16)
-				break
-				case "l":
-				localMemory = new SimpleLRUAllocator(PAGESHIFT, MAXSIZE * 16)
-				break
-				case "k":
-				localMemory = new LRU2Allocator(PAGESHIFT, MAXSIZE * 16)
-				break
-				case "a":
-				localMemory = new AdaptiveLRUAllocator(PAGESHIFT, MAXSIZE * 16)
-				break
-				case "w":
-				localMemory = new WorkingsetAllocator(PAGESHIFT, MAXSIZE * 16)
-				break
-				case "3":
-				localMemory = new ThreeQAllocator(PAGESHIFT, MAXSIZE * 16)
-				break
-			}
+		switch (memoryModel) {
+			case "z":
+			localMemory = new LocalMemoryAllocator(PAGESHIFT, MAXSIZE)
+			break
+			
+			default:
+			println "ERROR: This is local memory allocator code"
+			throw(new Exception("Wrong memory model specified"))
 		}
 	}
 	
@@ -66,7 +53,9 @@ class ProcessorState {
 	
 	def matchThread(def threadNo)
 	{
-		return (threadNo == activeThread)
+		if (threadNo == activeThread)
+			return true
+		else return assignThread(threadNo)
 	}
 	
 	synchronized def assignThread(def threadNo)

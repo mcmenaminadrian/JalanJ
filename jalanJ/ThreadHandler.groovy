@@ -27,6 +27,7 @@ class ThreadHandler extends DefaultHandler {
 	long perThreadFault
 	def tickOn
 	def threads =[]
+	def affineProcessor
 	
 	ThreadHandler(def processors, def threadNo, def callback)
 	{
@@ -36,6 +37,7 @@ class ThreadHandler extends DefaultHandler {
 		master = callback
 		waitState = false
 		myProcessor = -1
+		affineProcessor = -1
 		memoryWidth = processors[0].PAGESIZE / 16
 		perThreadFault = 0
 		tickOn = 0
@@ -56,13 +58,12 @@ class ThreadHandler extends DefaultHandler {
 	
 	//check if we have a processor and attempt to assign one if we don't
 	def getProcessor()
-	{
-		for (i in 0 .. processorList.size() - 1) {
-			if (processorList[i].matchThread(threadNumber)) {
-				myProcessor = i
+	{	
+		if (affineProcessor >= 0 &&
+			processorList[affineProcessor].matchThread(threadNumber)) {
+				myProcessor = affineProcessor
 				waitState = false
 				return i
-			}
 		}
 		while (true) {
 			waitState = true
@@ -70,6 +71,7 @@ class ThreadHandler extends DefaultHandler {
 			for (i in 0 .. processorList.size() - 1) {
 				if (processorList[i].assignThread(threadNumber)) {
 					myProcessor = i
+					affineProcessor = i
 					waitState = false
 					return i
 				}
@@ -83,12 +85,11 @@ class ThreadHandler extends DefaultHandler {
 		def havePage = false
 		def countDown = 100 * memoryWidth
 		while (countDown > 0) {
-			if (!processorList[0].gotPage(address)) {
+			if (myProcessor >= 0 &&
+					!processorList[myProcessor].gotPage(address)) {
 				waitState = true
-				if (myProcessor >= 0 ) {
-					processorList[myProcessor].deassignThread()
-					myProcessor = -1
-				}
+				processorList[myProcessor].deassignThread()
+				myProcessor = -1
 				waitForTick()
 				countDown--
 			} else {
@@ -96,12 +97,12 @@ class ThreadHandler extends DefaultHandler {
 				break
 			}
 		}
+		getProcessor()
 		if (!havePage) {
 			master.incrementFaultCount()
 			perThreadFault++ 
-			processorList[0].addPage(address)
+			processorList[myProcessor].addPage(address)
 		}
-		getProcessor()
 		waitForTick()
 	}
 	
