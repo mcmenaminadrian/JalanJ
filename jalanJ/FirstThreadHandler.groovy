@@ -27,12 +27,12 @@ class FirstThreadHandler extends ThreadHandler {
 	
 	void addressRead(long address)
 	{
-		if (!processorList[0].gotPage(address)) {
-				master.timeElapsed += 100 * memoryWidth
-				master.incrementFaultCount()
-				perThreadFault++
-				processorList[0].addPage(address)
-			}
+		if (!processorList[myProcessor].gotPage(address)) {
+			master.timeElapsed += 100 * memoryWidth
+			master.incrementFaultCount()
+			perThreadFault++
+			processorList[myProcessor].addPage(address)
+		}
 		master.timeElapsed++
 	}
 	

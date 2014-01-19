@@ -80,10 +80,40 @@ class ExecutionTimer {
 		}
 	}
 	
+	synchronized void cutMemory()
+	{
+		def maxProcessors = activeThreads
+		if (maxProcessors > PROCESSORS)
+			maxProcessors = PROCESSORS
+		for (i in 1 .. maxProcessors)
+		{
+			processors[i - 1].lessMemory(maxProcessors)
+		}
+		if (activeThreads < PROCESSORS) {
+			for (i in activeThreads .. PROCESSORS)
+			{
+				processors[i - 1].zeroMemory()
+			}
+		} 
+	}
+	
 	synchronized void closeoutThread()
 	{
 		signalTick()
 		removeActiveThread()
+		def maxProcessors = activeThreads
+		if (maxProcessors > PROCESSORS)
+			maxProcessors = PROCESSORS
+		for (i in 1 .. maxProcessors)
+		{
+			processors[i - 1].moreMemory(maxProcessors)
+		}
+		if (activeThreads < PROCESSORS) {
+			for (i in activeThreads .. PROCESSORS)
+			{
+				processors[i - 1].zeroMemory()
+			}
+		}
 	}
 	
 	synchronized def handleFirstThread(def threadStr, def procs){

@@ -25,6 +25,7 @@ class ProcessorState {
 		PAGESHIFT = pageOffset
 		PAGESIZE = 1 << PAGESHIFT
 		MAXSIZE = maxSize * 1024
+		goingThreads = 1
 		switch (memoryModel) {
 			case "z":
 			localMemory = new LocalMemoryAllocator(PAGESHIFT, MAXSIZE)
@@ -34,6 +35,22 @@ class ProcessorState {
 			println "ERROR: This is local memory allocator code"
 			throw(new Exception("Wrong memory model specified"))
 		}
+	}
+	
+	synchronized void moreMemory(def threadCount)
+	{
+		localMemory.setNewMax(MAXSIZE * (16/threadCount).toInteger())
+	}
+	
+	synchronized void lessMemory(def threadCount)
+	{
+	
+		localMemory.setNewMax(MAXSIZE * (16/threadCount).toInteger())
+	}
+	
+	synchronized void zeroMemory()
+	{
+		localMemory.zeroMemory()
 	}
 	
 	synchronized void setThread(def thread)

@@ -42,6 +42,7 @@ class ThreadHandler extends DefaultHandler {
 		perThreadFault = 0
 		tickOn = 0
 		master.addActiveThread()
+		master.cutMemory()
 		instructionCount = 0
 	}
 	
@@ -63,7 +64,7 @@ class ThreadHandler extends DefaultHandler {
 			processorList[affineProcessor].matchThread(threadNumber)) {
 				myProcessor = affineProcessor
 				waitState = false
-				return i
+				return myProcessor
 		}
 		while (true) {
 			waitState = true
@@ -85,11 +86,12 @@ class ThreadHandler extends DefaultHandler {
 		def havePage = false
 		def countDown = 100 * memoryWidth
 		while (countDown > 0) {
-			if (myProcessor >= 0 &&
-					!processorList[myProcessor].gotPage(address)) {
+			//two tests to try to speed execution up here
+			if (!processorList[affineProcessor].gotPage(address) ||
+				!processorList.find{it.gotPage(address)})
+			{
 				waitState = true
 				processorList[myProcessor].deassignThread()
-				myProcessor = -1
 				waitForTick()
 				countDown--
 			} else {
