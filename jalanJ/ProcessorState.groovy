@@ -12,7 +12,7 @@ class ProcessorState {
 	def waitState
 	def activeThread
 	def startProcessor
-	static def localMemory
+	def localMemory
 	def MAXSIZE
 	def PAGESHIFT
 	def PAGESIZE
@@ -25,7 +25,6 @@ class ProcessorState {
 		PAGESHIFT = pageOffset
 		PAGESIZE = 1 << PAGESHIFT
 		MAXSIZE = maxSize * 1024
-		goingThreads = 1
 		switch (memoryModel) {
 			case "z":
 			localMemory = new LocalMemoryAllocator(PAGESHIFT, MAXSIZE)

@@ -40,7 +40,7 @@ class GuiWindow extends SwingBuilder {
 		def datum = new Date()
 		writer = new FileWriter("FAULTS${datum.time.toString()}.txt")
 		writerIC = new FileWriter("IC${datum.time.toString()}.txt")
-		writer.write("Count, Rate")
+		writer.write("Count, Faults")
 		writerIC.write("Count")
 		for (i in 1..18) {
 			writer.write(", Thread${i}")
@@ -72,13 +72,11 @@ class GuiWindow extends SwingBuilder {
 				def normalizer = (COUNT/(newCount - previousCount))
 				Integer faultRate = faultCount * normalizer
 				//output data
-				writer.write("${newCount}, ${faultRate}")
+				writer.write("${newCount}, ${faultCount}")
 				writerIC.write("${newCount}")
 				for (i in 1..controlObject.handlers.size())
 				{
-					Integer normalizedPerThreadFR =
-						handlerFR[i - 1] * normalizer
-					writer.write(", $normalizedPerThreadFR")
+					writer.write(", ${handlerFR[i - 1]}")
 					writerIC.write(", ${handlerIC[i - 1]}")
 				}
 				writer.write("\n")

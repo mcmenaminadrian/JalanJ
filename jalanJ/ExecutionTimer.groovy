@@ -31,6 +31,7 @@ class ExecutionTimer {
 	def faultCount
 	def synchCount = 10
 	def latchKey
+	def resetMemory
 	
 	ExecutionTimer(def fileStr, def gui, def memModel, def maxSize,
 		def pageOffset)
@@ -48,6 +49,7 @@ class ExecutionTimer {
 		}
 		faultCount = 0
 		activeThreads = 0
+		resetMemory = false
 		timeExecution()
 	}
 	
@@ -74,14 +76,36 @@ class ExecutionTimer {
 	synchronized void tickOver()
 	{
 		timeElapsed += synchCount
+		//reset the memory here to avoid race conditions - 
+		//all threads have stopped
+		if (resetMemory) {
+			fixMemory()
+			resetMemory = false
+		}
 		handlers.each {
 			if (it.waitOne)
 				it.waitOne.release(1)
 		}
 	}
 	
+	synchronized void signalTick()
+	{
+		if (++signalledThreads >= activeThreads) {
+			signalledThreads = 0
+			tickOver()
+		}
+	}
+	
 	synchronized void cutMemory()
 	{
+		resetMemory = true
+		signalTick()
+	}
+	
+	synchronized void fixMemory()
+	{
+		for (i in 1 .. PROCESSORS)
+			processors[i - 1].activeThread = -1
 		def maxProcessors = activeThreads
 		if (maxProcessors > PROCESSORS)
 			maxProcessors = PROCESSORS
@@ -90,7 +114,7 @@ class ExecutionTimer {
 			processors[i - 1].lessMemory(maxProcessors)
 		}
 		if (activeThreads < PROCESSORS) {
-			for (i in activeThreads .. PROCESSORS)
+			for (i in activeThreads + 1 .. PROCESSORS)
 			{
 				processors[i - 1].zeroMemory()
 			}
@@ -101,19 +125,7 @@ class ExecutionTimer {
 	{
 		signalTick()
 		removeActiveThread()
-		def maxProcessors = activeThreads
-		if (maxProcessors > PROCESSORS)
-			maxProcessors = PROCESSORS
-		for (i in 1 .. maxProcessors)
-		{
-			processors[i - 1].moreMemory(maxProcessors)
-		}
-		if (activeThreads < PROCESSORS) {
-			for (i in activeThreads .. PROCESSORS)
-			{
-				processors[i - 1].zeroMemory()
-			}
-		}
+		resetMemory = true
 	}
 	
 	synchronized def handleFirstThread(def threadStr, def procs){
@@ -127,14 +139,6 @@ class ExecutionTimer {
 		threadIn.parse(
 			new InputSource(new FileInputStream(threadMap[threadStr]))
 			)
-		}
-	}
-	
-	synchronized void signalTick()
-	{
-		if (++signalledThreads >= activeThreads) {
-			signalledThreads = 0
-			tickOver()
 		}
 	}
 		

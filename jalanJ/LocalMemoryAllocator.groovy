@@ -6,7 +6,6 @@ class LocalMemoryAllocator implements PagingAllocator {
 	def TIMEOUT = 2048000
 	def PAGESHIFT
 	def maxMem
-	def threadsGoing
 	
 	LocalMemoryAllocator(def pageShift, def poolSize)
 	{
@@ -16,8 +15,6 @@ class LocalMemoryAllocator implements PagingAllocator {
 
 	synchronized setNewMax(long bytes)
 	{
-		if (memoryPool[-1])
-			memoryPool = [:]
 		def oldMax = maxMem
 		setMaxMemory(bytes)
 		//brutally dump pages if needed
@@ -34,17 +31,17 @@ class LocalMemoryAllocator implements PagingAllocator {
 	
 	synchronized void zeroMemory()
 	{
-		memoryPool = [:]
-		memoryPool[-1] = 0
+		maxMem = 0
+		memoryPool=[:]
 	}
 	
 	@Override
 	public boolean havePage(long address, Object debug) {
-		if (memoryPool[-1])
-			throw new Exception("accessing the dead pool")
+		if (maxMem == 0)
+			return false
 		if (memoryPool[address >> PAGESHIFT])
 			return true
-		return false;
+		return false
 	}
 
 	@Override
@@ -56,13 +53,16 @@ class LocalMemoryAllocator implements PagingAllocator {
 					purgePages[key] = value
 			}
 			if (purgePages.size() == 0) {
+				if (!memoryPool){
+					println "HELP!"
+				}
 				memoryPool.remove(memoryPool.min{it.value}.key)
 			}
 			else
 				memoryPool = memoryPool - purgePages
 		}
 		memoryPool[address >> PAGESHIFT] = debug
-		return false;
+		return false
 	}
 
 	@Override
