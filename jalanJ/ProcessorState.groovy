@@ -71,7 +71,7 @@ class ProcessorState {
 	{
 		if (threadNo == activeThread)
 			return true
-		else return assignThread(threadNo)
+		else return false
 	}
 	
 	synchronized def assignThread(def threadNo)
