@@ -48,12 +48,18 @@ class FirstThreadHandler extends ThreadHandler {
 			case 'load':
 			case 'store':
 			def address = Long.parseLong(attrs.getValue('address'), 16)
+			def sizeRead = Long.parseLong(attrs.getValue('size'), 16)
 			/* FIX ME: we assume for now that allocations are aligned */
-			/* FIX ME: do not account for processor locality yet */
+			def page = address >> OFFSET
+			def nextPage = (address + sizeRead) >> OFFSET
 			if (noSpawns) {
 				addressRead(address)
+				if (page != nextPage)
+					addressRead(address + sizeRead)
 			} else {
 				super.addressRead(address)
+				if (page != nextPage)
+					super.addressRead(adress + sizeRead)
 			}
 			instructionCount++
 			break;
@@ -61,12 +67,23 @@ class FirstThreadHandler extends ThreadHandler {
 			case 'modify':
 			//have to do it twice
 			def address = Long.parseLong(attrs.getValue('address'), 16)
+			def sizeRead = Long.parseLong(attrs.getValue('size'), 16)
+			def page = address >> OFFSET
+			def nextPage = (address + sizeRead) >> OFFSET
 			if (noSpawns) {
 				addressRead(address)
 				addressRead(address)
+				if (nextPage != page) {
+					addressRead(address + sizeRead)
+					addressRead(address + sizeRead)
+				}
 			} else {
 				super.addressRead(address)
 				super.addressRead(address)
+				if (page != nextPage){
+					super.addressRead(address + sizeRead)
+					super.addressRead(address + sizeRead)
+				}
 			}
 			instructionCount++
 			break
@@ -78,7 +95,6 @@ class FirstThreadHandler extends ThreadHandler {
 			spawnThread(nextThread)
 			println "Have spawned thread ${nextThread} after ${master.timeElapsed} ticks"
 			break
-
 		}
 		
 	}
