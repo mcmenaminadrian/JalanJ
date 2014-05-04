@@ -27,8 +27,10 @@ class ThreadHandler extends DefaultHandler {
 	long perThreadFault
 	def tickOn
 	def threads =[]
+	def affineProcessor
+	def OFFSET
 	
-	ThreadHandler(def processors, def threadNo, def callback)
+	ThreadHandler(def processors, def threadNo, def callback, def pageOffset = 12)
 	{
 		super()
 		processorList = processors
@@ -36,11 +38,14 @@ class ThreadHandler extends DefaultHandler {
 		master = callback
 		waitState = false
 		myProcessor = -1
+		affineProcessor = -1
 		memoryWidth = processors[0].PAGESIZE / 16
 		perThreadFault = 0
 		tickOn = 0
 		master.addActiveThread()
+		master.cutMemory()
 		instructionCount = 0
+		OFFSET = pageOffset
 	}
 	
 	//wait for next global clock tick
@@ -56,13 +61,12 @@ class ThreadHandler extends DefaultHandler {
 	
 	//check if we have a processor and attempt to assign one if we don't
 	def getProcessor()
-	{
-		for (i in 0 .. processorList.size() - 1) {
-			if (processorList[i].matchThread(threadNumber)) {
-				myProcessor = i
+	{	
+		if (affineProcessor >= 0 &&
+			processorList[affineProcessor].matchThread(threadNumber)) {
+				myProcessor = affineProcessor
 				waitState = false
-				return i
-			}
+				return myProcessor
 		}
 		while (true) {
 			waitState = true
@@ -70,6 +74,7 @@ class ThreadHandler extends DefaultHandler {
 			for (i in 0 .. processorList.size() - 1) {
 				if (processorList[i].assignThread(threadNumber)) {
 					myProcessor = i
+					affineProcessor = i
 					waitState = false
 					return i
 				}
@@ -83,12 +88,12 @@ class ThreadHandler extends DefaultHandler {
 		def havePage = false
 		def countDown = 100 * memoryWidth
 		while (countDown > 0) {
-			if (!processorList[0].gotPage(address)) {
+			//two tests to try to speed execution up here
+			if (!processorList[affineProcessor].gotPage(address) ||
+				!processorList.find{it.gotPage(address)})
+			{
 				waitState = true
-				if (myProcessor >= 0 ) {
-					processorList[myProcessor].deassignThread()
-					myProcessor = -1
-				}
+				processorList[myProcessor].deassignThread()
 				waitForTick()
 				countDown--
 			} else {
@@ -96,12 +101,12 @@ class ThreadHandler extends DefaultHandler {
 				break
 			}
 		}
+		getProcessor()
 		if (!havePage) {
 			master.incrementFaultCount()
 			perThreadFault++ 
-			processorList[0].addPage(address)
+			processorList[myProcessor].addPage(address)
 		}
-		getProcessor()
 		waitForTick()
 	}
 	
@@ -148,17 +153,29 @@ class ThreadHandler extends DefaultHandler {
 			case 'load':
 			case 'store':
 			def address = Long.parseLong(attrs.getValue('address'), 16)
+			def sizeRead = Long.parseLong(attrs.getValue('size'), 16)
 			/* FIX ME: we assume for now that allocations are aligned */
 			/* FIX ME: do not account for processor locality yet */
 			addressRead(address)
+			def page = address >> OFFSET
+			def nextPage = (address + sizeRead) >> OFFSET
+			if (page != nextPage)
+				addressRead(address + sizeRead)
 			instructionCount++
 			break;
 			
 			case 'modify':
 			//have to do it twice
 			def address = Long.parseLong(attrs.getValue('address'), 16)
+			def sizeRead = Long.parseLong(attrs.getValue('size'), 16)
 			addressRead(address)
 			addressRead(address)
+			def page = address >> OFFSET
+			def nextPage = (address + sizeRead) >> OFFSET
+			if (page != nextPage) { 
+					addressRead(address + sizeRead)
+					addressRead(address + sizeRead)
+			}
 			instructionCount++
 			break
 			
