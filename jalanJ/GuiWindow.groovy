@@ -29,14 +29,14 @@ class GuiWindow extends SwingBuilder {
 		super()
 		previousCount = 0
 		controlObject = controller
-		frame = this.frame(title:'JalanJ') {
-			panel {
-				tickCounter = textField(columns:15, text:'0',
-					editable: false){}
-				faultCounter = textField(columns:3, text: '0',
-					editable: false){}
-			}
-		}
+//		frame = this.frame(title:'JalanJ') {
+//			panel {
+//				tickCounter = textField(columns:15, text:'0',
+//					editable: false){}
+//				faultCounter = textField(columns:3, text: '0',
+//					editable: false){}
+//			}
+//		}
 		def datum = new Date()
 		writer = new FileWriter("FAULTS${datum.time.toString()}.txt")
 		writerIC = new FileWriter("IC${datum.time.toString()}.txt")
@@ -50,8 +50,8 @@ class GuiWindow extends SwingBuilder {
 		writerIC.write("\n")
 		writer.flush()
 		writerIC.flush()
-		frame.pack()
-		frame.show()
+//		frame.pack()
+//		frame.show()
 		
 		
 		countUp = {
@@ -86,10 +86,10 @@ class GuiWindow extends SwingBuilder {
 				writer.flush()
 				writerIC.flush()
 				previousCount = newCount
-				tickCounter.text = newCount
-				faultCounter.text = faultRate
-				tickCounter.repaint()
-				faultCounter.repaint()
+//				tickCounter.text = newCount
+//				faultCounter.text = faultRate
+//				tickCounter.repaint()
+//				faultCounter.repaint()
 			}
 			new Timer().runAfter(5000, countUp)
 		}

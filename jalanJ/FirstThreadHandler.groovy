@@ -59,7 +59,7 @@ class FirstThreadHandler extends ThreadHandler {
 			} else {
 				super.addressRead(address)
 				if (page != nextPage)
-					super.addressRead(adress + sizeRead)
+					super.addressRead(address + sizeRead)
 			}
 			instructionCount++
 			break;

@@ -43,7 +43,6 @@ class ThreadHandler extends DefaultHandler {
 		perThreadFault = 0
 		tickOn = 0
 		master.addActiveThread()
-		master.cutMemory()
 		instructionCount = 0
 		OFFSET = pageOffset
 	}
@@ -168,12 +167,14 @@ class ThreadHandler extends DefaultHandler {
 			//have to do it twice
 			def address = Long.parseLong(attrs.getValue('address'), 16)
 			def sizeRead = Long.parseLong(attrs.getValue('size'), 16)
-			addressRead(address)
-			addressRead(address)
 			def page = address >> OFFSET
 			def nextPage = (address + sizeRead) >> OFFSET
-			if (page != nextPage) { 
-					addressRead(address + sizeRead)
+			addressRead(address)
+			if (page != nextPage) {
+				addressRead(address + sizeRead)
+			}
+			addressRead(address)
+			if (page != nextPage) {
 					addressRead(address + sizeRead)
 			}
 			instructionCount++
