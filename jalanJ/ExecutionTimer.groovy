@@ -27,7 +27,7 @@ class ExecutionTimer {
 	volatile int activeThreads
 	def signalledThreads
 	def guiOutput
-	def guiWindow
+	def textWindow
 	def faultCount
 	def synchCount = 10
 	def latchKey
@@ -44,7 +44,7 @@ class ExecutionTimer {
 				this)
 		}
 		if (gui) {
-			guiWindow = new GuiWindow(this)
+			textWindow = new TextWindow(this)
 		}
 		faultCount = 0
 		activeThreads = 0
